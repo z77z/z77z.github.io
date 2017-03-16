@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,爬虫,mybatisplus">
+    <meta name="description" content="最近浏览很多博客，学习了不少新的知识，收获颇多，就想着能不能将新学的知识整合一下来练练手，提高自己撸代码搭框架的能力，还有就是给大家一个新年福利，爬一爬美女图片网站。上车请刷卡，哈哈。顺便就拿这爬来的数据作为基础数据来整合最近学习的框架。一劳多得。当然，本文还是以框架整合为主，爬取美女图片只是为了获取基础数据而已啦！！
+现在我将我的学习成果分享出来，还望各位大神多多指点，有些不规范的地方还望大家">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程">
+<meta property="og:url" content="http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="最近浏览很多博客，学习了不少新的知识，收获颇多，就想着能不能将新学的知识整合一下来练练手，提高自己撸代码搭框架的能力，还有就是给大家一个新年福利，爬一爬美女图片网站。上车请刷卡，哈哈。顺便就拿这爬来的数据作为基础数据来整合最近学习的框架。一劳多得。当然，本文还是以框架整合为主，爬取美女图片只是为了获取基础数据而已啦！！
+现在我将我的学习成果分享出来，还望各位大神多多指点，有些不规范的地方还望大家">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122210346811?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122210921243?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122211209525?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122211603093?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122225056645?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170122231926662?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-01-30T09:20:54.550Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程">
+<meta name="twitter:description" content="最近浏览很多博客，学习了不少新的知识，收获颇多，就想着能不能将新学的知识整合一下来练练手，提高自己撸代码搭框架的能力，还有就是给大家一个新年福利，爬一爬美女图片网站。上车请刷卡，哈哈。顺便就拿这爬来的数据作为基础数据来整合最近学习的框架。一劳多得。当然，本文还是以框架整合为主，爬取美女图片只是为了获取基础数据而已啦！！
+现在我将我的学习成果分享出来，还望各位大神多多指点，有些不规范的地方还望大家">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170122210346811?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-01-22T16:25:58.000Z" itemprop="datePublished" class="page-time">
+  2017-01-23
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#先上成果（19禁！！）"><span class="post-toc-number">1.</span> <span class="post-toc-text">先上成果（19禁！！）</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#使用工具，框架介绍"><span class="post-toc-number">2.</span> <span class="post-toc-text">使用工具，框架介绍</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#建立数据库"><span class="post-toc-number">3.</span> <span class="post-toc-text">建立数据库</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#整合框架的搭建"><span class="post-toc-number">4.</span> <span class="post-toc-text">整合框架的搭建</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#新建项目添加配置文件"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">新建项目添加配置文件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写MybatisPlusConfig-java"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">编写MybatisPlusConfig.java</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用mybatisplus的代码生成插件"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">使用mybatisplus的代码生成插件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#对插件生成的代码简要分析"><span class="post-toc-number">4.4.</span> <span class="post-toc-text">对插件生成的代码简要分析</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#创建springboot入口Application-java"><span class="post-toc-number">4.5.</span> <span class="post-toc-text">创建springboot入口Application.java</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写测试jsp和controller"><span class="post-toc-number">4.6.</span> <span class="post-toc-text">编写测试jsp和controller</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#运行"><span class="post-toc-number">4.7.</span> <span class="post-toc-text">运行</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年01月23日 0:25" datetime="2017-01-22T16:25:58.000Z"  itemprop="datePublished">2017-01-23</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>最近浏览很多博客，学习了不少新的知识，收获颇多，就想着能不能将新学的知识整合一下来练练手，提高自己撸代码搭框架的能力，还有就是给大家一个新年福利，爬一爬美女图片网站。上车请刷卡，哈哈。顺便就拿这爬来的数据作为基础数据来整合最近学习的框架。一劳多得。当然，本文还是以框架整合为主，爬取美女图片只是为了获取基础数据而已啦！！</p>
+<p>现在我将我的学习成果分享出来，还望各位大神多多指点，有些不规范的地方还望大家指出，多多讨论学习，共同进步。源码我已经托管到我的码云上面，大家可以进我的博客查看，如果想要图片资源的话在评论区留下邮箱吧。</p>
+</blockquote>
+<p>、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、、<br><strong>个人博客地址：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></strong><br>，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，</p>
+<h1 id="先上成果（19禁！！）"><a href="#先上成果（19禁！！）" class="headerlink" title="先上成果（19禁！！）"></a>先上成果（19禁！！）</h1><p>爬取的图片，一共爬了<strong>一万多张</strong>，够大家玩一阵了。。。——–羞涩。。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170122210346811?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="爬取的图片" title="">
+                </div>
+                <div class="image-caption">爬取的图片</div>
+            </figure>
+<p>数据库：</p>
+<p>存储每个图片集合的链接，标题等信息。</p>
+<p> <img src="http://img.blog.csdn.net/20170122210921243?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="文章信息表"></p>
+<p>存储每张图片的链接，并且和图片集合表关联。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170122211209525?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="图片信息表" title="">
+                </div>
+                <div class="image-caption">图片信息表</div>
+            </figure>
+<p>项目整体搭建出来后的效果</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170122211603093?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="项目文件结构" title="">
+                </div>
+                <div class="image-caption">项目文件结构</div>
+            </figure>
+<h1 id="使用工具，框架介绍"><a href="#使用工具，框架介绍" class="headerlink" title="使用工具，框架介绍"></a>使用工具，框架介绍</h1><blockquote>
+<p>这里只介绍下最近学习的框架，其他在后面用到在做介绍。这两个框架都是对现有的spring和mybatis的一个提升，而并不是替代之前的框架，使开发者能够达到敏捷开发的目的。只推荐老司机学习，新手还是建议从基础入手。</p>
+</blockquote>
+<ul>
+<li>SpringBoot</li>
+</ul>
+<blockquote>
+<p>Spring由于其繁琐的配置，一度被人认为“配置地狱”，各种XML、Annotation配置，让人眼花缭乱，而且如果出错了也很难找出原因。想想之前搭建一个SSM框架，配置文件相当恼火，springboot的出现就大大减少了这些配置，甚至可以零配置文件。这里推荐一个此框架学习的博客链接：<a href="http://blog.720ui.com/page/3/" target="_blank" rel="external">http://blog.720ui.com/page/3/</a></p>
+</blockquote>
+<ul>
+<li>MybatisPlus：</li>
+</ul>
+<blockquote>
+<p> 这个框架是国内的大神编写的，我个人认为这就是一个mybatis的一个增强工具包，好处请大家自行去官方文档查阅，这里就不再赘述了。文档链接：<a href="http://mp.baomidou.com/docs/index.html" target="_blank" rel="external">http://mp.baomidou.com/docs/index.html</a></p>
+</blockquote>
+<h1 id="建立数据库"><a href="#建立数据库" class="headerlink" title="建立数据库"></a>建立数据库</h1><blockquote>
+<p>这里数据来源是爬虫爬取的。这里爬虫本身就不多介绍，我之前已经写过爬虫相关文章，出门左拐，我的个人博客中。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">/*</div><div class="line">Navicat MySQL Data Transfer</div><div class="line"></div><div class="line">Source Server         : 本地</div><div class="line">Source Server Version : 50610</div><div class="line">Source Host           : localhost:3306</div><div class="line">Source Database       : crawler</div><div class="line"></div><div class="line">Target Server Type    : MYSQL</div><div class="line">Target Server Version : 50610</div><div class="line">File Encoding         : 65001</div><div class="line"></div><div class="line">Date: 2017-01-22 22:40:13</div><div class="line">*/</div><div class="line"></div><div class="line">SET FOREIGN_KEY_CHECKS=0;</div><div class="line"></div><div class="line">-- ----------------------------</div><div class="line">-- Table structure for beautiful_pictures</div><div class="line">-- ----------------------------</div><div class="line">DROP TABLE IF EXISTS `beautiful_pictures`;</div><div class="line">CREATE TABLE `beautiful_pictures` (</div><div class="line">  `id` varchar(255) NOT NULL COMMENT &apos;美女图片爬取&apos;,</div><div class="line">  `title` varchar(255) DEFAULT NULL,</div><div class="line">  `url` varchar(255) DEFAULT NULL,</div><div class="line">  `pictureurls_num` int(11) DEFAULT NULL,</div><div class="line">  `zan` int(11) DEFAULT NULL,</div><div class="line">  `biaoqian` varchar(255) DEFAULT NULL,</div><div class="line">  `keywords` varchar(255) DEFAULT NULL,</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div><div class="line"></div><div class="line">-- ----------------------------</div><div class="line">-- Table structure for picture</div><div class="line">-- ----------------------------</div><div class="line">DROP TABLE IF EXISTS `picture`;</div><div class="line">CREATE TABLE `picture` (</div><div class="line">  `id` varchar(255) NOT NULL COMMENT &apos;每张图片的地址&apos;,</div><div class="line">  `pictures_id` varchar(255) DEFAULT NULL,</div><div class="line">  `url` varchar(255) DEFAULT NULL,</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+<h1 id="整合框架的搭建"><a href="#整合框架的搭建" class="headerlink" title="整合框架的搭建"></a>整合框架的搭建</h1><h2 id="新建项目添加配置文件"><a href="#新建项目添加配置文件" class="headerlink" title="新建项目添加配置文件"></a>新建项目添加配置文件</h2><blockquote>
+<p>我这里使用的IDE工具是Spring Tool Suite，spring开发的首选开发工具<br> 新建一个maven project ，选择maven-archetypr-webapp这个文件结构模版。<br> 配置pom.xml文件和application.properties文件</p>
+</blockquote>
+<p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></div><div class="line">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">	<span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatisplus-spring-boot<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"></div><div class="line">	<span class="tag">&lt;<span class="name">parent</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4.1.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">parent</span>&gt;</span></div><div class="line">	</div><div class="line">	<span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		</div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat.embed<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-embed-jasper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>Mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.38<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="comment">&lt;!-- mybatisPlus代码生成模板引擎 --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.velocity<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>velocity<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="comment">&lt;!-- druid阿里巴巴数据库连接池 --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>druid<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.26<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		</div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.zaxxer<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>HikariCP<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="comment">&lt;!-- MP 核心库 --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="comment">&lt;!-- JUnit test dependency --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.jayway.restassured<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>rest-assured<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">		<span class="comment">&lt;!-- fastjson阿里巴巴jSON处理器 --&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fastjson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.13<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.jsoup<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jsoup<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.10.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div><div class="line"></div><div class="line">	<span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">plugins</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">plugin</span>&gt;</span></div><div class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">			<span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">build</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>application.properties</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">#view</div><div class="line">spring.mvc.view.prefix=/WEB-INF/view/</div><div class="line">spring.mvc.view.suffix=.jsp</div><div class="line"></div><div class="line"># jdbc_config</div><div class="line">spring.datasource.url=jdbc:mysql://127.0.0.1:3306/crawler?characterEncoding=utf8</div><div class="line">spring.datasource.username=root</div><div class="line">spring.datasource.password=</div><div class="line">spring.datasource.driver-class-name=com.mysql.jdbc.Driver</div><div class="line">spring.datasource.type=com.alibaba.druid.pool.DruidDataSource</div><div class="line"></div><div class="line">#druid_config</div><div class="line">spring.datasource.max-active: 20</div><div class="line">spring.datasource.initial-size: 1</div><div class="line">spring.datasource.min-idle: 3</div><div class="line">spring.datasource.max-wait: 60000</div><div class="line">spring.datasource.time-between-eviction-runs-millis: 60000</div><div class="line">spring.datasource.min-evictable-idle-time-millis: 300000</div><div class="line">spring.datasource.test-while-idle: true</div><div class="line">spring.datasource.test-on-borrow: false</div><div class="line">spring.datasource.test-on-return: false</div><div class="line">spring.datasource.poolPreparedStatements: true</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"># mybatis_config</div><div class="line">mybatis.mapper-locations=classpath:io/z77z/mapper/*Mapper.xml </div><div class="line">mybatis.typeAliasesPackage=io.z77z.entity</div><div class="line"></div><div class="line"># log_config   DEBUG    ERROR    INFO    WARN  </div><div class="line">logging.level.root=WARN</div><div class="line">logging.file=./logs/spring-boot-logging.log</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如果pom.xml报错，大部分原因都是因为jar包没有下载成功，可以手动下载后放到maven本地仓库里面，阿里maven镜像仓库链接：<a href="http://maven.aliyun.com/nexus/#welcome" target="_blank" rel="external">http://maven.aliyun.com/nexus/#welcome</a></p>
+</blockquote>
+<h2 id="编写MybatisPlusConfig-java"><a href="#编写MybatisPlusConfig-java" class="headerlink" title="编写MybatisPlusConfig.java"></a>编写MybatisPlusConfig.java</h2><blockquote>
+<p>对mybatisplus的一些配置，配置成Bean交给spring容器管理</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> PaginationInterceptor <span class="title">paginationInterceptor</span><span class="params">()</span> </span>&#123;</div><div class="line">	PaginationInterceptor page = <span class="keyword">new</span> PaginationInterceptor();</div><div class="line">	page.setDialectType(<span class="string">"mysql"</span>);</div><div class="line">	<span class="keyword">return</span> page;</div><div class="line">&#125;</div><div class="line"><span class="comment">/**</span></div><div class="line"> * 这里全部使用mybatis-autoconfigure 已经自动加载的资源。不手动指定</div><div class="line"> * 配置文件和mybatis-boot的配置文件同步</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> MybatisSqlSessionFactoryBean <span class="title">mybatisSqlSessionFactoryBean</span><span class="params">()</span> </span>&#123;</div><div class="line">	MybatisSqlSessionFactoryBean mybatisPlus = <span class="keyword">new</span> MybatisSqlSessionFactoryBean();</div><div class="line">	mybatisPlus.setDataSource(dataSource);</div><div class="line">	mybatisPlus.setVfs(SpringBootVFS.class);</div><div class="line">	<span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.properties.getConfigLocation())) &#123;</div><div class="line">		mybatisPlus.setConfigLocation(<span class="keyword">this</span>.resourceLoader.getResource(<span class="keyword">this</span>.properties.getConfigLocation()));</div><div class="line">	&#125;</div><div class="line">	mybatisPlus.setConfiguration(properties.getConfiguration());</div><div class="line">	<span class="keyword">if</span> (!ObjectUtils.isEmpty(<span class="keyword">this</span>.interceptors)) &#123;</div><div class="line">		mybatisPlus.setPlugins(<span class="keyword">this</span>.interceptors);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">// MP 全局配置，更多内容进入类看注释</span></div><div class="line">	GlobalConfiguration globalConfig = <span class="keyword">new</span> GlobalConfiguration();</div><div class="line">	globalConfig.setDbType(DBType.MYSQL.name());</div><div class="line">	<span class="comment">// ID 策略 AUTO-&gt;`0`("数据库ID自增") INPUT-&gt;`1`(用户输入ID") ID_WORKER-&gt;`2`("全局唯一ID") UUID-&gt;`3`("全局唯一ID")</span></div><div class="line">	globalConfig.setIdType(<span class="number">3</span>);</div><div class="line">	mybatisPlus.setGlobalConfig(globalConfig);</div><div class="line">	MybatisConfiguration mc = <span class="keyword">new</span> MybatisConfiguration();</div><div class="line">	mc.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);</div><div class="line">	mybatisPlus.setConfiguration(mc);</div><div class="line">	<span class="keyword">if</span> (<span class="keyword">this</span>.databaseIdProvider != <span class="keyword">null</span>) &#123;</div><div class="line">		mybatisPlus.setDatabaseIdProvider(<span class="keyword">this</span>.databaseIdProvider);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (StringUtils.hasLength(<span class="keyword">this</span>.properties.getTypeAliasesPackage())) &#123;</div><div class="line">		mybatisPlus.setTypeAliasesPackage(<span class="keyword">this</span>.properties.getTypeAliasesPackage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (StringUtils.hasLength(<span class="keyword">this</span>.properties.getTypeHandlersPackage())) &#123;</div><div class="line">		mybatisPlus.setTypeHandlersPackage(<span class="keyword">this</span>.properties.getTypeHandlersPackage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (!ObjectUtils.isEmpty(<span class="keyword">this</span>.properties.resolveMapperLocations())) &#123;</div><div class="line">		mybatisPlus.setMapperLocations(<span class="keyword">this</span>.properties.resolveMapperLocations());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> mybatisPlus;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="使用mybatisplus的代码生成插件"><a href="#使用mybatisplus的代码生成插件" class="headerlink" title="使用mybatisplus的代码生成插件"></a>使用mybatisplus的代码生成插件</h2><p>MpGenerator.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;p&gt;</div><div class="line"> * 代码生成器演示</div><div class="line"> * &lt;/p&gt;</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MpGenerator</span> </span>&#123;</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * MySQL 生成演示</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		AutoGenerator mpg = <span class="keyword">new</span> AutoGenerator();</div><div class="line">		<span class="comment">// 全局配置</span></div><div class="line">		GlobalConfig gc = <span class="keyword">new</span> GlobalConfig();</div><div class="line">		gc.setOutputDir(<span class="string">"C://"</span>);</div><div class="line">		gc.setFileOverride(<span class="keyword">true</span>);</div><div class="line">		gc.setActiveRecord(<span class="keyword">true</span>);</div><div class="line">		gc.setEnableCache(<span class="keyword">false</span>);<span class="comment">// XML 二级缓存</span></div><div class="line">		gc.setBaseResultMap(<span class="keyword">true</span>);<span class="comment">// XML ResultMap</span></div><div class="line">		gc.setBaseColumnList(<span class="keyword">false</span>);<span class="comment">// XML columList</span></div><div class="line">		gc.setAuthor(<span class="string">"z77z"</span>);</div><div class="line">		<span class="comment">// 自定义文件命名，注意 %s 会自动填充表实体属性！</span></div><div class="line">		<span class="comment">// gc.setMapperName("%sDao");</span></div><div class="line">		<span class="comment">// gc.setXmlName("%sDao");</span></div><div class="line">		<span class="comment">// gc.setServiceName("MP%sService");</span></div><div class="line">		<span class="comment">// gc.setServiceImplName("%sServiceDiy");</span></div><div class="line">		<span class="comment">// gc.setControllerName("%sAction");</span></div><div class="line">		mpg.setGlobalConfig(gc);</div><div class="line">		<span class="comment">// 数据源配置</span></div><div class="line">		DataSourceConfig dsc = <span class="keyword">new</span> DataSourceConfig();</div><div class="line">		dsc.setDbType(DbType.MYSQL);</div><div class="line">		dsc.setDriverName(<span class="string">"com.mysql.jdbc.Driver"</span>);</div><div class="line">		dsc.setUsername(<span class="string">"root"</span>);</div><div class="line">		dsc.setPassword(<span class="string">""</span>);</div><div class="line">		dsc.setUrl(<span class="string">"jdbc:mysql://127.0.0.1:3306/crawler?characterEncoding=utf8"</span>);</div><div class="line">		mpg.setDataSource(dsc);</div><div class="line">		<span class="comment">// 策略配置</span></div><div class="line">		StrategyConfig strategy = <span class="keyword">new</span> StrategyConfig();</div><div class="line">		<span class="comment">//strategy.setTablePrefix("beautiful_");// 此处可以修改为您的表前缀</span></div><div class="line">		strategy.setNaming(NamingStrategy.underline_to_camel);<span class="comment">// 表名生成策略</span></div><div class="line">		strategy.setInclude(<span class="keyword">new</span> String[] &#123; <span class="string">"beautiful_pictures"</span> &#125;); <span class="comment">// 需要生成的表</span></div><div class="line">		strategy.setInclude(<span class="keyword">new</span> String[] &#123; <span class="string">"picture"</span> &#125;); <span class="comment">// 需要生成的表</span></div><div class="line">		<span class="comment">// strategy.setExclude(new String[]&#123;"test"&#125;); // 排除生成的表</span></div><div class="line">		<span class="comment">// 字段名生成策略</span></div><div class="line">		strategy.setFieldNaming(NamingStrategy.underline_to_camel);</div><div class="line">		<span class="comment">// 自定义实体父类</span></div><div class="line">		<span class="comment">// strategy.setSuperEntityClass("com.baomidou.demo.TestEntity");</span></div><div class="line">		<span class="comment">// 自定义实体，公共字段</span></div><div class="line">		<span class="comment">// strategy.setSuperEntityColumns(new String[] &#123; "test_id", "age" &#125;);</span></div><div class="line">		<span class="comment">// 自定义 mapper 父类</span></div><div class="line">		<span class="comment">// strategy.setSuperMapperClass("com.baomidou.demo.TestMapper");</span></div><div class="line">		<span class="comment">// 自定义 service 父类</span></div><div class="line">		<span class="comment">// strategy.setSuperServiceClass("com.baomidou.demo.TestService");</span></div><div class="line">		<span class="comment">// 自定义 service 实现类父类</span></div><div class="line">		<span class="comment">// strategy.setSuperServiceImplClass("com.baomidou.demo.TestServiceImpl");</span></div><div class="line">		<span class="comment">// 自定义 controller 父类</span></div><div class="line">		<span class="comment">// strategy.setSuperControllerClass("com.baomidou.demo.TestController");</span></div><div class="line">		<span class="comment">// 【实体】是否生成字段常量（默认 false）</span></div><div class="line">		<span class="comment">// public static final String ID = "test_id";</span></div><div class="line">		<span class="comment">// strategy.setEntityColumnConstant(true);</span></div><div class="line">		<span class="comment">// 【实体】是否为构建者模型（默认 false）</span></div><div class="line">		<span class="comment">// public User setName(String name) &#123;this.name = name; return this;&#125;</span></div><div class="line">		<span class="comment">// strategy.setEntityBuliderModel(true);</span></div><div class="line">		mpg.setStrategy(strategy);</div><div class="line">		<span class="comment">// 包配置</span></div><div class="line">		PackageConfig pc = <span class="keyword">new</span> PackageConfig();</div><div class="line">		pc.setParent(<span class="string">"io"</span>);</div><div class="line">		pc.setModuleName(<span class="string">"z77z"</span>);</div><div class="line">		mpg.setPackageInfo(pc);</div><div class="line">		<span class="comment">// 注入自定义配置，可以在 VM 中使用 cfg.abc 设置的值</span></div><div class="line">		InjectionConfig cfg = <span class="keyword">new</span> InjectionConfig() &#123;</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initMap</span><span class="params">()</span> </span>&#123;</div><div class="line">				Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</div><div class="line">				map.put(<span class="string">"abc"</span>, <span class="keyword">this</span>.getConfig().getGlobalConfig().getAuthor() + <span class="string">"-mp"</span>);</div><div class="line">				<span class="keyword">this</span>.setMap(map);</div><div class="line">			&#125;</div><div class="line">		&#125;;</div><div class="line">		mpg.setCfg(cfg);</div><div class="line">		<span class="comment">// 自定义模板配置，可以 copy 源码 mybatis-plus/src/main/resources/template 下面内容修改，</span></div><div class="line">		<span class="comment">// 放置自己项目的 src/main/resources/template 目录下, 默认名称一下可以不配置，也可以自定义模板名称</span></div><div class="line">		<span class="comment">// TemplateConfig tc = new TemplateConfig();</span></div><div class="line">		<span class="comment">// tc.setController("...");</span></div><div class="line">		<span class="comment">// tc.setEntity("...");</span></div><div class="line">		<span class="comment">// tc.setMapper("...");</span></div><div class="line">		<span class="comment">// tc.setXml("...");</span></div><div class="line">		<span class="comment">// tc.setService("...");</span></div><div class="line">		<span class="comment">// tc.setServiceImpl("...");</span></div><div class="line">		<span class="comment">// mpg.setTemplate(tc);</span></div><div class="line">		<span class="comment">// 执行生成</span></div><div class="line">		mpg.execute();</div><div class="line">		<span class="comment">// 打印注入设置</span></div><div class="line">		System.err.println(mpg.getCfg().getMap().get(<span class="string">"abc"</span>));</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>新建上面java文件，注释已经解释的很清楚了，这里就不多说，配置好后直接运行，就会得到相应模块代码，直接将其稍作修改放到项目中即可。</p>
+</blockquote>
+<h2 id="对插件生成的代码简要分析"><a href="#对插件生成的代码简要分析" class="headerlink" title="对插件生成的代码简要分析"></a>对插件生成的代码简要分析</h2><p>就拿生成的mapper文件做说明：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170122225056645?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="生成的mapper文件" title="">
+                </div>
+                <div class="image-caption">生成的mapper文件</div>
+            </figure>
+<blockquote>
+<p>如上图所示生成的mapper继承了一个类，是mybatisplus提供的，查看其源码可以发现，继承的类里面封装了一些常用的通用的增删改查的代码，还有对分页查询的处理。简化了开发的代码量，只需要专注于业务逻辑的编写和实现，源码如下：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;p&gt;</div><div class="line"> * Mapper 继承该接口后，无需编写 mapper.xml 文件，即可获得CRUD功能</div><div class="line"> * &lt;/p&gt;</div><div class="line"> * &lt;p&gt;</div><div class="line"> * 这个 Mapper 支持 id 泛型</div><div class="line"> * &lt;/p&gt;</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> hubin</div><div class="line"> * <span class="doctag">@Date</span> 2016-01-23</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseMapper</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 插入一条记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> entity</div><div class="line">	 *            实体对象</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">insert</span><span class="params">(T entity)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 ID 删除</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> id</div><div class="line">	 *            主键ID</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">deleteById</span><span class="params">(Serializable id)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 columnMap 条件，删除记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> columnMap</div><div class="line">	 *            表字段 map 对象</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">deleteByMap</span><span class="params">(@Param(<span class="string">"cm"</span>)</span> Map&lt;String, Object&gt; columnMap)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 entity 条件，删除记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">delete</span><span class="params">(@Param(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 删除（根据ID 批量删除）</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> idList</div><div class="line">	 *            主键ID列表</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">deleteBatchIds</span><span class="params">(List&lt;? extends Serializable&gt; idList)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 ID 修改</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> entity</div><div class="line">	 *            实体对象</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">updateById</span><span class="params">(T entity)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 whereEntity 条件，更新记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> entity</div><div class="line">	 *            实体对象</div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span></div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">update</span><span class="params">(@Param(<span class="string">"et"</span>)</span> T entity, @<span class="title">Param</span><span class="params">(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 ID 查询</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> id</div><div class="line">	 *            主键ID</div><div class="line">	 * <span class="doctag">@return</span> T</div><div class="line">	 */</div><div class="line">	<span class="function">T <span class="title">selectById</span><span class="params">(Serializable id)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 查询（根据ID 批量查询）</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> idList</div><div class="line">	 *            主键ID列表</div><div class="line">	 * <span class="doctag">@return</span> List&lt;T&gt;</div><div class="line">	 */</div><div class="line">	<span class="function">List&lt;T&gt; <span class="title">selectBatchIds</span><span class="params">(List&lt;? extends Serializable&gt; idList)</span></span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 查询（根据 columnMap 条件）</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> columnMap</div><div class="line">	 *            表字段 map 对象</div><div class="line">	 * <span class="doctag">@return</span> List&lt;T&gt;</div><div class="line">	 */</div><div class="line">	<span class="function">List&lt;T&gt; <span class="title">selectByMap</span><span class="params">(@Param(<span class="string">"cm"</span>)</span> Map&lt;String, Object&gt; columnMap)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 entity 条件，查询一条记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> entity</div><div class="line">	 *            实体对象</div><div class="line">	 * <span class="doctag">@return</span> T</div><div class="line">	 */</div><div class="line">	<span class="function">T <span class="title">selectOne</span><span class="params">(@Param(<span class="string">"ew"</span>)</span> T entity)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 Wrapper 条件，查询总记录数</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象</div><div class="line">	 * <span class="doctag">@return</span> int</div><div class="line">	 */</div><div class="line">	<span class="function">Integer <span class="title">selectCount</span><span class="params">(@Param(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 entity 条件，查询全部记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span> List&lt;T&gt;</div><div class="line">	 */</div><div class="line">	<span class="function">List&lt;T&gt; <span class="title">selectList</span><span class="params">(@Param(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 Wrapper 条件，查询全部记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 *</div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span> List&lt;T&gt;</div><div class="line">	 */</div><div class="line">	List&lt;Map&lt;String, Object&gt;&gt; selectMaps(<span class="meta">@Param</span>(<span class="string">"ew"</span>) Wrapper&lt;T&gt; wrapper);</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 Wrapper 条件，查询全部记录</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 *</div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span> List&lt;Object&gt;</div><div class="line">	 */</div><div class="line">	<span class="function">List&lt;Object&gt; <span class="title">selectObjs</span><span class="params">(@Param(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 entity 条件，查询全部记录（并翻页）</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> rowBounds</div><div class="line">	 *            分页查询条件（可以为 RowBounds.DEFAULT）</div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类（可以为 null）</div><div class="line">	 * <span class="doctag">@return</span> List&lt;T&gt;</div><div class="line">	 */</div><div class="line">	<span class="function">List&lt;T&gt; <span class="title">selectPage</span><span class="params">(RowBounds rowBounds, @Param(<span class="string">"ew"</span>)</span> Wrapper&lt;T&gt; wrapper)</span>;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * &lt;p&gt;</div><div class="line">	 * 根据 Wrapper 条件，查询全部记录（并翻页）</div><div class="line">	 * &lt;/p&gt;</div><div class="line">	 *</div><div class="line">	 * <span class="doctag">@param</span> rowBounds</div><div class="line">	 *            分页查询条件（可以为 RowBounds.DEFAULT）</div><div class="line">	 * <span class="doctag">@param</span> wrapper</div><div class="line">	 *            实体对象封装操作类</div><div class="line">	 * <span class="doctag">@return</span> List&lt;Map&lt;String, Object&gt;&gt;</div><div class="line">	 */</div><div class="line">	List&lt;Map&lt;String, Object&gt;&gt; selectMapsPage(RowBounds rowBounds, <span class="meta">@Param</span>(<span class="string">"ew"</span>) Wrapper&lt;T&gt; wrapper);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>对于其他的生成文件大家可以依照这个思路去查看其源码，结合之前传统的SSM开发，了解其原理。</p>
+</blockquote>
+<h2 id="创建springboot入口Application-java"><a href="#创建springboot入口Application-java" class="headerlink" title="创建springboot入口Application.java"></a>创建springboot入口Application.java</h2><blockquote>
+<p>需要注意的地方我都写在注释里面了，这里我是把爬虫的启动也写在这个配置文件里面了，项目一启动就会执行爬虫。知道爬取的数据为空就停止爬取。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * springboot</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="comment">// 扫描指定包下面的mapper接口</span></div><div class="line"><span class="meta">@MapperScan</span>(<span class="string">"io.z77z.dao"</span>)</div><div class="line"></div><div class="line"><span class="comment">// 该 @SpringBootApplication 注解等价于以默认属性使用:</span></div><div class="line"><span class="comment">// @Configuration</span></div><div class="line"><span class="comment">// @EnableAutoConfiguration</span></div><div class="line"><span class="comment">// @ComponentScan</span></div><div class="line"></div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> <span class="keyword">extends</span> <span class="title">SpringBootServletInitializer</span> <span class="keyword">implements</span> <span class="title">CommandLineRunner</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	PictureService pictureService;</div><div class="line">	<span class="comment">//入口</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SpringApplication.run(Application.class, args);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//Java EE应用服务器配置，</span></div><div class="line">	<span class="comment">//如果要使用tomcat来加载jsp的话就必须继承SpringBootServletInitializer类并且重写其中configure方法</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">protected</span> SpringApplicationBuilder <span class="title">configure</span> <span class="params">(SpringApplicationBuilder application)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> application.sources(Application.class);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//springboot运行后此方法首先被调用</span></div><div class="line">	<span class="comment">//实现CommandLineRunner抽象类中的run方法</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(String... args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="comment">//返回值</span></div><div class="line">		<span class="keyword">int</span> result = <span class="number">1</span>;</div><div class="line">		<span class="comment">//访问页码</span></div><div class="line">		Integer page = <span class="number">1</span>;</div><div class="line">		<span class="comment">//启动爬虫</span></div><div class="line">		System.out.println(<span class="string">"爬虫开始工作！"</span>);</div><div class="line">		<span class="keyword">while</span>(result==<span class="number">1</span>)&#123;</div><div class="line">			result = crawler(page.toString());</div><div class="line">			page+=<span class="number">1</span>;</div><div class="line">			<span class="keyword">if</span>(result==<span class="number">0</span>)&#123;</div><div class="line">				System.out.println(<span class="string">"爬虫运行结束！！"</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">crawler</span><span class="params">(String page)</span></span>&#123; </div><div class="line">		<span class="comment">//初始化返回值</span></div><div class="line">		<span class="keyword">int</span> result = <span class="number">1</span>;</div><div class="line">		<span class="comment">//网站首页地址</span></div><div class="line">		String homeUrl = <span class="string">"http://www.87g.com/"</span>;</div><div class="line">		<span class="comment">//接口地址</span></div><div class="line">		String url = <span class="string">"http://www.87g.com/index.php?m=content&amp;c=content_ajax&amp;a=picture_page&amp;siteid=1&amp;catid=35&amp;page="</span>+page;</div><div class="line">		System.out.println(<span class="string">"当前爬取第"</span>+ page +<span class="string">"页数据"</span>);</div><div class="line">		<span class="comment">//访问接口，</span></div><div class="line">		JSONObject resultjson = CrawlerUtil.getReturnJson(url);</div><div class="line">		<span class="keyword">if</span>(resultjson!=<span class="keyword">null</span>)&#123;</div><div class="line">			<span class="comment">//获取其value值</span></div><div class="line">			Collection&lt;Object&gt; jsonList = resultjson.values();</div><div class="line">				<span class="keyword">for</span>(Object obj : jsonList)&#123;</div><div class="line">					BeautifulPictures beautifulPictures = JSON.parseObject(obj.toString(), BeautifulPictures.class);</div><div class="line">					String Keywords = beautifulPictures.getKeywords();</div><div class="line">					<span class="comment">//按map条件查询。判断是否已经爬过，没有就入库</span></div><div class="line">					Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</div><div class="line">					map.put(<span class="string">"keywords"</span>, Keywords);</div><div class="line">					<span class="keyword">int</span> cont = beautifulPicturesService.selectByMap(map).size();</div><div class="line">					<span class="keyword">if</span>(cont==<span class="number">0</span>)&#123;</div><div class="line">						<span class="comment">//入库</span></div><div class="line">						beautifulPicturesService.insert(beautifulPictures);</div><div class="line">						<span class="comment">//访问链接获取document，并保存里面的图片</span></div><div class="line">						List&lt;Picture&gt; listPicture = CrawlerUtil.getArticleInfo(homeUrl+beautifulPictures.getUrl(),beautifulPictures);</div><div class="line">						<span class="keyword">for</span>(Picture picture : listPicture)&#123;</div><div class="line">							<span class="comment">//入库</span></div><div class="line">							pictureService.insert(picture);</div><div class="line">						&#125;</div><div class="line">					&#125;<span class="keyword">else</span>&#123;</div><div class="line">						System.out.println(homeUrl+beautifulPictures.getUrl()+<span class="string">"页面数据已经爬过了！！"</span>);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">		&#125;<span class="keyword">else</span>&#123;</div><div class="line">			System.out.println(<span class="string">"爬取到"</span>+page+<span class="string">"页时没有数据了！！"</span>);</div><div class="line">			result = <span class="number">0</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> result;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="编写测试jsp和controller"><a href="#编写测试jsp和controller" class="headerlink" title="编写测试jsp和controller"></a>编写测试jsp和controller</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=UTF-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"UTF-8"</span>%&gt;</div><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Insert title here<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	helloJsp</div><div class="line">	<span class="tag">&lt;<span class="name">hr</span>&gt;</span>$&#123;user&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//如果是要返回jsp页面就必须要使用@Controller而不是@RestController</div><div class="line">@Controller</div><div class="line">@RequestMapping(&quot;/test&quot;)</div><div class="line">public class TestController &#123;</div><div class="line">	</div><div class="line">	@Autowired</div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line">	</div><div class="line">	@RequestMapping(&quot;/test1&quot;)  </div><div class="line">    public String view(Model model,Page&lt;BeautifulPictures&gt; page) &#123;</div><div class="line">		Page&lt;BeautifulPictures&gt; pageList= beautifulPicturesService.selectPage(page);</div><div class="line">		model.addAttribute(&quot;user&quot;,JSON.toJSONString(pageList.getRecords()));</div><div class="line">        return &quot;index&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>直接运行Application.java启动项目，项目会运行在springboot内嵌的web容器中，本项目是使用的内嵌tomcat容器。运行成功后，在浏览器输入<a href="http://localhost:8080/test/test1?current=2&amp;size=10" target="_blank" rel="external">http://localhost:8080/test/test1?current=2&amp;size=10</a>（curren代表要获取的页码，size代表要获取的数据条数）就会出现下面效果：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170122231926662?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title="">
+                </div>
+                <div class="image-caption">这里写图片描述</div>
+            </figure>
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-01-30T09:20:54.550Z" itemprop="dateUpdated">2017年1月30日 17:20</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" target="_blank" rel="external">http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mybatisplus/">mybatisplus</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&title=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&title=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot缓存注解学习笔记之Redis</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">免费个人博客搭建教程（详细-图文）--Hexo+OSChina</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程" data-title="SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程" data-url="http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&title=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&title=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEf0lEQVR42u3aQXIbMQwEQP//084DEskzAJUS5d6Tq7ziks0DARBfX/HzHT9/v//3OM9Hzmfy/J1H7ydfGT6YMGHChOktmWbLfj7dhOPR1JN39luerx0TJkyYMH0GUzJcy5qMPzvgNyPnI2DChAkTpt/MNJtQG0bkqW8bamDChAkTJkzPh0uAcsQ2FJjRYMKECROm38y0T2WTcvAmWd2UfZPi9bFaOCZMmDBhejOm2RXgZ/x9+MGECRMmTG/G9F0+SYo4O2LPHvmz1T2cMyZMmDBhupbp1CXiqaLtJiXet/v8MDImTJgwYbqQaX8NmUw9LyJvwpEDF5aPxsGECRMmTJcz5RybBHh2VM/4kq8U4QImTJgwYbqcKTnO90XV9jifte8kAUe+8VHchAkTJkyY3phpn762C8i/+MKqdpwSY8KECROmz2DKj+f2kD51MO+DlQQoehMTJkyYMF3FlB+uecJ5tnSbs7a/LUrGmDBhwoTpWqY2rT0VCrRTz9PXdhV1xIQJEyZMmD6CKW/NmU03P7BnnTOb2f5wnYkJEyZMmK5iaptX2kLwJh1tW13bxqCiNIwJEyZMmK5lattoNkd7m4juI50W/Yd3MGHChAnTtUyzls3Vx152bM+KwkUhGBMmTJgwXciUXxwmx+2mMagNSmZzazcGEyZMmDDdzjQbqC3szi5BE+hZiXnY3IMJEyZMmK5iyqdyqimn2LdRoTbfkjwJx4QJEyZM9zLlKWX+3zxoODXaK0KcohaOCRMmTJjenqm9yJyVXNtltJeXbUiRFKYxYcKECdMnMW2SzNnl6P9puGm/9XBMTJgwYcJ0IVOypH2q/P30OfuVtogchUeYMGHChOlapnxa+6vENlBIisunysoFECZMmDBhuoqpncrmCM8nlyfhbfjSbtjD/iZMmDBhwnQJUzu52UTzcnCSkOfQs6tTTJgwYcL0SUz5gjeXnbMl5d/Km42GRW1MmDBhwvQRTLOSbvvOZpM2LT5JSPFDkRcTJkyYMF3I1F4TztLX2fj5YvJy8CzIwIQJEyZM9zLlTTB50ba9RGzT0XZW7cXqP2aCCRMmTJg+jml2nA9LqOugpL1GrQvfmDBhwoTpWqZ9+jorB7dH+3P0WfPQsCKOCRMmTJguZNpfPSYBwSy8yGe4fydKpzFhwoQJ04VMrzjg86nUJddDzUN5Go8JEyZMmO5lyhtZzn7+a/HkR/ixb2HChAkTpo9g2iSHs+vPdnn5ZuTtPlEYhAkTJkyYrmWaXW2eWnx+DVln84cCAkyYMGHCdDvTd/nk6WhS6t0veLN5RVkZEyZMmDBdyzQ7E5P2mlnamYcOr0iVDwQQmDBhwoTpLZnahpv2CvNUap2EIHl48XzzHlbEMWHChAnTtUybA7WNONpftan18xFmQQkmTJgwYfqdTElu2B7Ss2LubLQiUMCECRMmTL+MKSm8nm3xyQORNlCItg0TJkyYMF3O1B7neQq6bwnaNPrMGnQeBgSYMGHChOlCprbMuvnv5nry1LXoZtswYcKECdNVTH8AfQttvp2a+xQAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

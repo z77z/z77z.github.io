@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+shiro整合学习之登录认证和权限控制 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,shiro">
+    <meta name="description" content="学习任务目标
+用户必须要登陆之后才能访问定义链接，否则跳转到登录页面。
+
+对链接进行权限控制，只有当当前登录用户有这个链接访问权限才可以访问，否则跳转到指定页面。
+
+输入错误密码用户名或则用户被设置为静止登录，返回相应json串信息。
+
+
+
+我是用的是之前搭建的一个springboot+mybatisplus+jsp的一个基础框架。在这之上进行shiro的整合。需要的同学可以去我的码云下载。
+
+个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+shiro整合学习之登录认证和权限控制">
+<meta property="og:url" content="http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="学习任务目标
+用户必须要登陆之后才能访问定义链接，否则跳转到登录页面。
+
+对链接进行权限控制，只有当当前登录用户有这个链接访问权限才可以访问，否则跳转到指定页面。
+
+输入错误密码用户名或则用户被设置为静止登录，返回相应json串信息。
+
+
+
+我是用的是之前搭建的一个springboot+mybatisplus+jsp的一个基础框架。在这之上进行shiro的整合。需要的同学可以去我的码云下载。
+
+个">
+<meta property="og:updated_time" content="2017-02-13T14:46:28.172Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+shiro整合学习之登录认证和权限控制">
+<meta name="twitter:description" content="学习任务目标
+用户必须要登陆之后才能访问定义链接，否则跳转到登录页面。
+
+对链接进行权限控制，只有当当前登录用户有这个链接访问权限才可以访问，否则跳转到指定页面。
+
+输入错误密码用户名或则用户被设置为静止登录，返回相应json串信息。
+
+
+
+我是用的是之前搭建的一个springboot+mybatisplus+jsp的一个基础框架。在这之上进行shiro的整合。需要的同学可以去我的码云下载。
+
+个">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+shiro整合学习之登录认证和权限控制</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+shiro整合学习之登录认证和权限控制</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-02-13T14:46:58.000Z" itemprop="datePublished" class="page-time">
+  2017-02-13
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#学习任务目标"><span class="post-toc-number">1.</span> <span class="post-toc-text">学习任务目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#导入shiro依赖包到pom-xml"><span class="post-toc-number">2.</span> <span class="post-toc-text">导入shiro依赖包到pom.xml</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#采用RBAC模式建立数据库"><span class="post-toc-number">3.</span> <span class="post-toc-text">采用RBAC模式建立数据库</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Dao层代码的编写"><span class="post-toc-number">4.</span> <span class="post-toc-text">Dao层代码的编写</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#配置shiro"><span class="post-toc-number">5.</span> <span class="post-toc-text">配置shiro</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#登录认证实现"><span class="post-toc-number">6.</span> <span class="post-toc-text">登录认证实现</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#链接权限的实现"><span class="post-toc-number">7.</span> <span class="post-toc-text">链接权限的实现</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写web层的代码"><span class="post-toc-number">8.</span> <span class="post-toc-text">编写web层的代码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#主页页面"><span class="post-toc-number">9.</span> <span class="post-toc-text">主页页面</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#测试"><span class="post-toc-number">10.</span> <span class="post-toc-text">测试</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结"><span class="post-toc-number">11.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+shiro整合学习之登录认证和权限控制"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+shiro整合学习之登录认证和权限控制</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年02月13日 22:46" datetime="2017-02-13T14:46:58.000Z"  itemprop="datePublished">2017-02-13</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="学习任务目标"><a href="#学习任务目标" class="headerlink" title="学习任务目标"></a>学习任务目标</h2><ol>
+<li><p>用户必须要登陆之后才能访问定义链接，否则跳转到登录页面。</p>
+</li>
+<li><p>对链接进行权限控制，只有当当前登录用户有这个链接访问权限才可以访问，否则跳转到指定页面。</p>
+</li>
+<li><p>输入错误密码用户名或则用户被设置为静止登录，返回相应json串信息。</p>
+</li>
+</ol>
+<blockquote>
+<p>我是用的是之前搭建的一个springboot+mybatisplus+jsp的一个基础框架。在这之上进行shiro的整合。需要的同学可以去我的码云下载。</p>
+</blockquote>
+<p>个人博客：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></p>
+<p>此项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a></p>
+<h2 id="导入shiro依赖包到pom-xml"><a href="#导入shiro依赖包到pom-xml" class="headerlink" title="导入shiro依赖包到pom.xml"></a>导入shiro依赖包到pom.xml</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- shiro权限控制框架 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="采用RBAC模式建立数据库"><a href="#采用RBAC模式建立数据库" class="headerlink" title="采用RBAC模式建立数据库"></a>采用RBAC模式建立数据库</h2><blockquote>
+<p>RBAC  是基于角色的访问控制（Role-Based Access Control ）在 RBAC  中，权限与角色相关联，用户通过成为适当角色的成员而得到这些角色的权限。这就极大地简化了权限的管理。这样管理都是层级相互依赖的，权限赋予给角色，而把角色又赋予用户，这样的权限设计很清楚，管理起来很方便。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">/*表结构插入*/</div><div class="line">DROP TABLE IF EXISTS `u_permission`;</div><div class="line"></div><div class="line">CREATE TABLE `u_permission` (</div><div class="line">  `id` bigint(20) NOT NULL AUTO_INCREMENT,</div><div class="line">  `url` varchar(256) DEFAULT NULL COMMENT 'url地址',</div><div class="line">  `name` varchar(64) DEFAULT NULL COMMENT 'url描述',</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;</div><div class="line"></div><div class="line">/*Table structure for table `u_role` */</div><div class="line"></div><div class="line">DROP TABLE IF EXISTS `u_role`;</div><div class="line"></div><div class="line">CREATE TABLE `u_role` (</div><div class="line">  `id` bigint(20) NOT NULL AUTO_INCREMENT,</div><div class="line">  `name` varchar(32) DEFAULT NULL COMMENT '角色名称',</div><div class="line">  `type` varchar(10) DEFAULT NULL COMMENT '角色类型',</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;</div><div class="line"></div><div class="line">/*Table structure for table `u_role_permission` */</div><div class="line"></div><div class="line">DROP TABLE IF EXISTS `u_role_permission`;</div><div class="line"></div><div class="line">CREATE TABLE `u_role_permission` (</div><div class="line">  `rid` bigint(20) DEFAULT NULL COMMENT '角色ID',</div><div class="line">  `pid` bigint(20) DEFAULT NULL COMMENT '权限ID'</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div><div class="line"></div><div class="line">/*Table structure for table `u_user` */</div><div class="line"></div><div class="line">DROP TABLE IF EXISTS `u_user`;</div><div class="line"></div><div class="line">CREATE TABLE `u_user` (</div><div class="line">  `id` bigint(20) NOT NULL AUTO_INCREMENT,</div><div class="line">  `nickname` varchar(20) DEFAULT NULL COMMENT '用户昵称',</div><div class="line">  `email` varchar(128) DEFAULT NULL COMMENT '邮箱|登录帐号',</div><div class="line">  `pswd` varchar(32) DEFAULT NULL COMMENT '密码',</div><div class="line">  `create_time` datetime DEFAULT NULL COMMENT '创建时间',</div><div class="line">  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',</div><div class="line">  `status` bigint(1) DEFAULT '1' COMMENT '1:有效，0:禁止登录',</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;</div><div class="line"></div><div class="line">/*Table structure for table `u_user_role` */</div><div class="line"></div><div class="line">DROP TABLE IF EXISTS `u_user_role`;</div><div class="line"></div><div class="line">CREATE TABLE `u_user_role` (</div><div class="line">  `uid` bigint(20) DEFAULT NULL COMMENT '用户ID',</div><div class="line">  `rid` bigint(20) DEFAULT NULL COMMENT '角色ID'</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+<h2 id="Dao层代码的编写"><a href="#Dao层代码的编写" class="headerlink" title="Dao层代码的编写"></a>Dao层代码的编写</h2><blockquote>
+<p>Dao层的entity，service，mapper等我是采用mybatisplus的代码自动生成工具生成的，具备了单表的增删改查功能和分页功能，比较方便，这里我就不贴代码了。</p>
+</blockquote>
+<h2 id="配置shiro"><a href="#配置shiro" class="headerlink" title="配置shiro"></a>配置shiro</h2><p><strong>ShiroConfig.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@author</span> 作者 z77z</div><div class="line"> * <span class="doctag">@date</span> 创建时间：2017年2月10日 下午1:16:38</div><div class="line"> * </div><div class="line"> */</div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroConfig</span> </span>&#123;</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * ShiroFilterFactoryBean 处理拦截资源文件问题。</div><div class="line">	 * 注意：单独一个ShiroFilterFactoryBean配置是或报错的，以为在</div><div class="line">	 * 初始化ShiroFilterFactoryBean的时候需要注入：SecurityManager</div><div class="line">	 *</div><div class="line">	 * Filter Chain定义说明 1、一个URL可以配置多个Filter，使用逗号分隔 2、当设置多个过滤器时，全部验证通过，才视为通过</div><div class="line">	 * 3、部分过滤器可指定参数，如perms，roles</div><div class="line">	 *</div><div class="line">	 */</div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shirFilter</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</div><div class="line">		ShiroFilterFactoryBean shiroFilterFactoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</div><div class="line"></div><div class="line">		<span class="comment">// 必须设置 SecurityManager</span></div><div class="line">		shiroFilterFactoryBean.setSecurityManager(securityManager);</div><div class="line"></div><div class="line">		<span class="comment">// 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面</span></div><div class="line">		shiroFilterFactoryBean.setLoginUrl(<span class="string">"/login"</span>);</div><div class="line">		<span class="comment">// 登录成功后要跳转的链接</span></div><div class="line">		shiroFilterFactoryBean.setSuccessUrl(<span class="string">"/index"</span>);</div><div class="line">		<span class="comment">// 未授权界面;</span></div><div class="line">		shiroFilterFactoryBean.setUnauthorizedUrl(<span class="string">"/403"</span>);</div><div class="line"></div><div class="line">		<span class="comment">// 拦截器.</span></div><div class="line">		Map&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();</div><div class="line">		<span class="comment">// 配置不会被拦截的链接 顺序判断</span></div><div class="line">		filterChainDefinitionMap.put(<span class="string">"/static/**"</span>, <span class="string">"anon"</span>);</div><div class="line">		filterChainDefinitionMap.put(<span class="string">"/ajaxLogin"</span>, <span class="string">"anon"</span>);</div><div class="line"></div><div class="line">		<span class="comment">// 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了</span></div><div class="line">		filterChainDefinitionMap.put(<span class="string">"/logout"</span>, <span class="string">"logout"</span>);</div><div class="line"></div><div class="line">		filterChainDefinitionMap.put(<span class="string">"/add"</span>, <span class="string">"perms[权限添加]"</span>);</div><div class="line"></div><div class="line">		<span class="comment">// &lt;!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 --&gt;:这是一个坑呢，一不小心代码就不好使了;</span></div><div class="line">		<span class="comment">// &lt;!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问--&gt;</span></div><div class="line">		filterChainDefinitionMap.put(<span class="string">"/**"</span>, <span class="string">"authc"</span>);</div><div class="line"></div><div class="line">		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);</div><div class="line">		System.out.println(<span class="string">"Shiro拦截器工厂类注入成功"</span>);</div><div class="line">		<span class="keyword">return</span> shiroFilterFactoryBean;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span> </span>&#123;</div><div class="line">		DefaultWebSecurityManager securityManager = <span class="keyword">new</span> DefaultWebSecurityManager();</div><div class="line">		<span class="comment">// 设置realm.</span></div><div class="line">		securityManager.setRealm(myShiroRealm());</div><div class="line">		<span class="keyword">return</span> securityManager;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 身份认证realm; (这个需要自己写，账号密码校验；权限等)</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@return</span></div><div class="line">	 */</div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> MyShiroRealm <span class="title">myShiroRealm</span><span class="params">()</span> </span>&#123;</div><div class="line">		MyShiroRealm myShiroRealm = <span class="keyword">new</span> MyShiroRealm();</div><div class="line">		<span class="keyword">return</span> myShiroRealm;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="登录认证实现"><a href="#登录认证实现" class="headerlink" title="登录认证实现"></a>登录认证实现</h2><blockquote>
+<p>在认证、授权内部实现机制中都有提到，最终处理都将交给Real进行处理。因为在Shiro中，最终是通过Realm来获取应用程序中的用户、角色及权限信息的。通常情况下，在Realm中会直接从我们的数据源中获取Shiro需要的验证信息。可以说，Realm是专用于安全框架的DAO.</p>
+<p>Shiro的认证过程最终会交由Realm执行，这时会调用Realm的getAuthenticationInfo(token)方法。<br>该方法主要执行以下操作:</p>
+<p>1、检查提交的进行认证的令牌信息</p>
+<p>2、根据令牌信息从数据源(通常为数据库)中获取用户信息</p>
+<p>3、对用户信息进行匹配验证。</p>
+<p>4、验证通过将返回一个封装了用户信息的AuthenticationInfo实例。</p>
+<p>5、验证失败则抛出AuthenticationException异常信息。</p>
+<p>而在我们的应用程序中要做的就是自定义一个Realm类，继承AuthorizingRealm抽象类，重载doGetAuthenticationInfo<br>()，重写获取用户信息的方法。</p>
+</blockquote>
+<p><strong>doGetAuthenticationInfo的重写</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* 认证信息.(身份验证) : Authentication 是用来验证用户身份</div><div class="line"> * </div><div class="line"> * <span class="doctag">@param</span> token</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> * <span class="doctag">@throws</span> AuthenticationException</div><div class="line"> */</div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(</span></span></div><div class="line">		AuthenticationToken authcToken) <span class="keyword">throws</span> AuthenticationException &#123;</div><div class="line">	System.out.println(<span class="string">"身份认证方法：MyShiroRealm.doGetAuthenticationInfo()"</span>);</div><div class="line"></div><div class="line">	ShiroToken token = (ShiroToken) authcToken;</div><div class="line">	Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</div><div class="line">	map.put(<span class="string">"nickname"</span>, token.getUsername());</div><div class="line">	map.put(<span class="string">"pswd"</span>, token.getPswd());</div><div class="line">	SysUser user = <span class="keyword">null</span>;</div><div class="line">	<span class="comment">// 从数据库获取对应用户名密码的用户</span></div><div class="line">	List&lt;SysUser&gt; userList = sysUserService.selectByMap(map);</div><div class="line">	<span class="keyword">if</span>(userList.size()!=<span class="number">0</span>)&#123;</div><div class="line">		user = userList.get(<span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (<span class="keyword">null</span> == user) &#123;</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> AccountException(<span class="string">"帐号或密码不正确！"</span>);</div><div class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(user.getStatus()==<span class="number">0</span>)&#123;</div><div class="line">		<span class="comment">/**</span></div><div class="line">		 * 如果用户的status为禁用。那么就抛出&lt;code&gt;DisabledAccountException&lt;/code&gt;</div><div class="line">		 */</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> DisabledAccountException(<span class="string">"帐号已经禁止登录！"</span>);</div><div class="line">	&#125;<span class="keyword">else</span>&#123;</div><div class="line">		<span class="comment">//更新登录时间 last login time</span></div><div class="line">		user.setLastLoginTime(<span class="keyword">new</span> Date());</div><div class="line">		sysUserService.updateById(user);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="keyword">new</span> SimpleAuthenticationInfo(user, user.getPswd(), getName());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>通俗的说，这个的重写就是我们第一个学习目标的实现。</p>
+</blockquote>
+<h2 id="链接权限的实现"><a href="#链接权限的实现" class="headerlink" title="链接权限的实现"></a>链接权限的实现</h2><blockquote>
+<p>shiro的权限授权是通过继承AuthorizingRealm抽象类，重载doGetAuthorizationInfo();</p>
+<p>当访问到页面的时候，链接配置了相应的权限或者shiro标签才会执行此方法否则不会执行，所以如果只是简单的身份认证没有权限的控制的话，那么这个方法可以不进行实现，直接返回null即可。</p>
+<p>在这个方法中主要是使用类：SimpleAuthorizationInfo</p>
+<p>进行角色的添加和权限的添加。</p>
+<p>authorizationInfo.addRole(role.getRole());</p>
+<p>authorizationInfo.addStringPermission(p.getPermission());</p>
+<p>当然也可以添加set集合：roles是从数据库查询的当前用户的角色，stringPermissions是从数据库查询的当前用户对应的权限</p>
+<p>authorizationInfo.setRoles(roles);</p>
+<p>authorizationInfo.setStringPermissions(stringPermissions);</p>
+<p>就是说如果在shiro配置文件中添加了filterChainDefinitionMap.put(“/add”, “perms[权限添加]”);<br>就说明访问/add这个链接必须要有“权限添加”这个权限才可以访问，</p>
+<p>如果在shiro配置文件中添加了filterChainDefinitionMap.put(“/add”, “roles[100002]，perms[权限添加]”);<br>就说明访问/add这个链接必须要有“权限添加”这个权限和具有“100002”这个角色才可以访问。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* 授权</div><div class="line"> */</div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> AuthorizationInfo <span class="title">doGetAuthorizationInfo</span><span class="params">(</span></span></div><div class="line">		PrincipalCollection principals) &#123;</div><div class="line">	System.out.println(<span class="string">"权限认证方法：MyShiroRealm.doGetAuthenticationInfo()"</span>);</div><div class="line">	SysUser token = (SysUser)SecurityUtils.getSubject().getPrincipal();</div><div class="line">	String userId = token.getId();</div><div class="line">	SimpleAuthorizationInfo info =  <span class="keyword">new</span> SimpleAuthorizationInfo();</div><div class="line">	<span class="comment">//根据用户ID查询角色（role），放入到Authorization里。</span></div><div class="line">	<span class="comment">/*Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();</span></div><div class="line">	map.put("user_id", userId);</div><div class="line">	List&lt;SysRole&gt; roleList = sysRoleService.selectByMap(map);</div><div class="line">	Set&lt;String&gt; roleSet = new HashSet&lt;String&gt;();</div><div class="line">	for(SysRole role : roleList)&#123;</div><div class="line">		roleSet.add(role.getType());</div><div class="line">	&#125;*/</div><div class="line">	<span class="comment">//实际开发，当前登录用户的角色和权限信息是从数据库来获取的，我这里写死是为了方便测试</span></div><div class="line">	Set&lt;String&gt; roleSet = <span class="keyword">new</span> HashSet&lt;String&gt;();</div><div class="line">	roleSet.add(<span class="string">"100002"</span>);</div><div class="line">	info.setRoles(roleSet);</div><div class="line">	<span class="comment">//根据用户ID查询权限（permission），放入到Authorization里。</span></div><div class="line">	<span class="comment">/*List&lt;SysPermission&gt; permissionList = sysPermissionService.selectByMap(map);</span></div><div class="line">	Set&lt;String&gt; permissionSet = new HashSet&lt;String&gt;();</div><div class="line">	for(SysPermission Permission : permissionList)&#123;</div><div class="line">		permissionSet.add(Permission.getName());</div><div class="line">	&#125;*/</div><div class="line">	Set&lt;String&gt; permissionSet = <span class="keyword">new</span> HashSet&lt;String&gt;();</div><div class="line">	permissionSet.add(<span class="string">"权限添加"</span>);</div><div class="line">	info.setStringPermissions(permissionSet);</div><div class="line">       <span class="keyword">return</span> info;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>这个类的实现是完成了我们学习目标的第二个任务。</p>
+</blockquote>
+<h2 id="编写web层的代码"><a href="#编写web层的代码" class="headerlink" title="编写web层的代码"></a>编写web层的代码</h2><p><strong>登录页面：</strong></p>
+<p><strong>controller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//跳转到登录表单页面</span></div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"login"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">login</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> <span class="string">"login"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * ajax登录请求</div><div class="line"> * <span class="doctag">@param</span> username</div><div class="line"> * <span class="doctag">@param</span> password</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"ajaxLogin"</span>,method=RequestMethod.POST)</div><div class="line"><span class="meta">@ResponseBody</span></div><div class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">submitLogin</span><span class="params">(String username, String password,Model model)</span> </span>&#123;</div><div class="line">	Map&lt;String, Object&gt; resultMap = <span class="keyword">new</span> LinkedHashMap&lt;String, Object&gt;();</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		</div><div class="line">		ShiroToken token = <span class="keyword">new</span> ShiroToken(username, password);</div><div class="line">		SecurityUtils.getSubject().login(token);</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">200</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, <span class="string">"登录成功"</span>);</div><div class="line"></div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">500</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, e.getMessage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> resultMap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>jsp</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=utf-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"utf-8"</span>%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">%</span></span></div><div class="line">	<span class="attr">String</span> <span class="attr">path</span> = <span class="string">request.getContextPath();</span></div><div class="line">	<span class="attr">String</span> <span class="attr">basePath</span> = <span class="string">request.getScheme()</span> + "<span class="attr">:</span>//"</div><div class="line">			+ <span class="attr">request.getServerName</span>() + "<span class="attr">:</span>" + <span class="attr">request.getServerPort</span>()</div><div class="line">			+ <span class="attr">path</span>;</div><div class="line">%&gt;</div><div class="line"><span class="meta">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=utf-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span></span></div><div class="line">	<span class="attr">src</span>=<span class="string">"&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js"</span>&gt;<span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>登录<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	错误信息：</div><div class="line">	<span class="tag">&lt;<span class="name">h4</span> <span class="attr">id</span>=<span class="string">"erro"</span>&gt;</span><span class="tag">&lt;/<span class="name">h4</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">form</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			账号：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"username"</span> <span class="attr">id</span>=<span class="string">"username"</span> <span class="attr">value</span>=<span class="string">"admin"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			密码：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">id</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"123"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">"ajaxLogin"</span> <span class="attr">value</span>=<span class="string">"登录"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line">	var username = $("#username").val();</div><div class="line">	var password = $("#password").val();</div><div class="line">	$("#ajaxLogin").click(function() &#123;</div><div class="line">		$.post("/ajaxLogin", &#123;</div><div class="line">			"username" : username,</div><div class="line">			"password" : password</div><div class="line">		&#125;, function(result) &#123;</div><div class="line">			if (result.status == 200) &#123;</div><div class="line">				location.href = "/index";</div><div class="line">			&#125; else &#123;</div><div class="line">				$("#erro").html(result.message);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	&#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="主页页面"><a href="#主页页面" class="headerlink" title="主页页面"></a>主页页面</h2><p><strong>controller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//跳转到主页</span></div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"index"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> <span class="string">"index"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line">* 退出</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"logout"</span>,method =RequestMethod.GET)</div><div class="line"><span class="meta">@ResponseBody</span></div><div class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">logout</span><span class="params">()</span></span>&#123;</div><div class="line">	Map&lt;String, Object&gt; resultMap = <span class="keyword">new</span> LinkedHashMap&lt;String, Object&gt;();</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="comment">//退出</span></div><div class="line">		SecurityUtils.getSubject().logout();</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		System.err.println(e.getMessage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> resultMap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>jsp</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=UTF-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"UTF-8"</span>%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">%</span></span></div><div class="line">	<span class="attr">String</span> <span class="attr">path</span> = <span class="string">request.getContextPath();</span></div><div class="line">	<span class="attr">String</span> <span class="attr">basePath</span> = <span class="string">request.getScheme()</span> + "<span class="attr">:</span>//"</div><div class="line">			+ <span class="attr">request.getServerName</span>() + "<span class="attr">:</span>" + <span class="attr">request.getServerPort</span>()</div><div class="line">			+ <span class="attr">path</span>;</div><div class="line">%&gt;</div><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span></span></div><div class="line">	<span class="attr">src</span>=<span class="string">"&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js"</span>&gt;<span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Insert title here<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	helloJsp</div><div class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">"logout"</span> <span class="attr">value</span>=<span class="string">"退出登录"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="undefined"></span></div><div class="line">	$("#logout").click(function()&#123;</div><div class="line">		location.href="/logout";</div><div class="line">	&#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>添加操作页面</strong></p>
+<p><strong>controller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"add"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">add</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> <span class="string">"add"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>jsp</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=UTF-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"UTF-8"</span>%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">%</span></span></div><div class="line">	<span class="attr">String</span> <span class="attr">path</span> = <span class="string">request.getContextPath();</span></div><div class="line">	<span class="attr">String</span> <span class="attr">basePath</span> = <span class="string">request.getScheme()</span> + "<span class="attr">:</span>//"</div><div class="line">			+ <span class="attr">request.getServerName</span>() + "<span class="attr">:</span>" + <span class="attr">request.getServerPort</span>()</div><div class="line">			+ <span class="attr">path</span>;</div><div class="line">%&gt;</div><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span></span></div><div class="line">	<span class="attr">src</span>=<span class="string">"&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js"</span>&gt;<span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Insert title here<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">具有添加权限</div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p><strong>任务一</strong></p>
+<blockquote>
+<p>编写好后就可以启动程序，访问index页面，由于没有登录就会跳转到login页面。</p>
+<p>登录之后就会跳转到index页面，点击退出登录后，有直接在浏览器中输入index页面访问，又会跳转到login页面</p>
+<p>上面这些操作时候触发MyShiroRealm.doGetAuthenticationInfo()这个方法，也就是登录认证的方法。</p>
+</blockquote>
+<hr>
+<p><strong>任务二</strong></p>
+<blockquote>
+<p>登录之后访问add页面成功访问，在shiro配置文件中改变add的访问权限为</p>
+<p>filterChainDefinitionMap.put(“/add”,”perms[权限删除]”);</p>
+<p>再重新启动程序，登录后访问，会重定向到/403页面，由于没有编写403页面，报404错误。</p>
+<p>上面这些操作，会触发权限认证方法：MyShiroRealm.doGetAuthorizationInfo()，每访问一次就会触发一次。</p>
+</blockquote>
+<hr>
+<p><strong>任务三</strong></p>
+<blockquote>
+<p>输入错误的用户名或则密码，返回“帐号或密码不正确！”的错误信息，在数据库中把一个用户的状态改为被禁用，再登陆，提示“帐号已经禁止登录！”的错误信息</p>
+<p>上面的操作，是在MyShiroRealm.doGetAuthenticationInfo()登录认证的方法中实现的，通过查询数据库判断当前登录用户是否被禁用，具体可以去看源码。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当然shiro很强大，这仅仅是完成了登录认证和权限管理这两个功能，接下来我会继续学习和分享，说说接下来的学习路线吧：</p>
+<ol>
+<li><p>shiro+redis集成，避免每次访问有权限的链接都会去执行MyShiroRealm.doGetAuthenticationInfo()方法来查询当前用户的权限，因为实际情况中权限是不会经常变得，这样就可以使用redis进行权限的缓存。</p>
+</li>
+<li><p>实现shiro链接权限的动态加载，之前要添加一个链接的权限，要在shiro的配置文件中添加filterChainDefinitionMap.put(“/add”, “roles[100002]，perms[权限添加]”)，这样很不方便管理，一种方法是将链接的权限使用数据库进行加载，另一种是通过init配置文件的方式读取。</p>
+</li>
+<li><p>Shiro 自定义权限校验Filter定义，及功能实现。</p>
+</li>
+<li><p>Shiro Ajax请求权限不满足，拦截后解决方案。这里有一个前提，我们知道Ajax不能做页面redirect和forward跳转，所以Ajax请求假如没登录，那么这个请求给用户的感觉就是没有任何反应，而用户又不知道用户已经退出了。</p>
+</li>
+<li><p>Shiro JSP标签使用。</p>
+</li>
+<li><p>Shiro 登录后跳转到最后一个访问的页面</p>
+</li>
+<li><p>在线显示，在线用户管理（踢出登录）。</p>
+</li>
+<li><p>登录注册密码加密传输。</p>
+</li>
+<li><p>集成验证码。</p>
+</li>
+<li><p>记住我的功能。关闭浏览器后还是登录状态。</p>
+</li>
+<li><p>还有没有想到的后面再说，欢迎大家提出一些建议。</p>
+</li>
+</ol>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-02-13T14:46:28.172Z" itemprop="dateUpdated">2017年2月13日 22:46</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" target="_blank" rel="external">http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/">shiro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&title=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&title=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/02/06/SB集成Redis学习笔记之实际应用场景-java干货/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SB集成Redis学习笔记之实际应用场景-java干货</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+shiro整合学习之登录认证和权限控制" data-title="SpringBoot+shiro整合学习之登录认证和权限控制" data-url="http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&title=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&title=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+shiro整合学习之登录认证和权限控制》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADO0lEQVR42u3aQW7jQAwEQP3/097LHgLsSm6SNiAxpVOgxNLU5ECTPccRX68f1887x/i6fs7rn6v6hA8sDhsbG/v27NfldcZOtiZZXPLMszvX63yzZdjY2Njr2Nev7D367E7+l/nby5uLjY2N/YvZ101CdYPygpQ0RdjY2NjYn2VXhz7VcoiNjY2NPSkzk1FRb/vyAvbhWRo2Njb27dnVOPbOP38l38bGxsa+MftVvPLQt1fM8mCgt/6/n8XGxsZexM6XNfpC/4VnVgsYNjY29lZ2cqQmH9BMwuDkXXkU8eaz2NjY2KvZ16VlMspJNjTZxLz4vclDsLGxsVew89HMpAGYz+0/VSCxsbGx97GrrUXy0Enrkpe9fIWnrQg2Njb2Inbv637erkzi5HxUVFgtNjY29lJ28uH5X+bNTB5dlEsjNjY29iJ2HhLk5aEa4iaNzeQwUPnwJTY2Nvaj2HnUmpSrfAxULYF5AS7P0rCxsbEfzq4Oj/Jh/WSQVL3f/FdhY2Njr2D3CskkMMjHRtf4vHD+Z+XY2NjYv4DdK1fVIGEyZupFxce8TmJjY2Pfkj1pSCbgvIXojZ/exAPY2NjY69i9Qf9k0XksMXl7M3PAxsbGfhS7usSkaUmeXx3098rbmyM72NjY2OvYk6ZiUqLywVBvtdjY2Nhb2UlDUg19e8Omanxb3cTTgzvY2NjYD2f3jshMqNUgeVLATjcUGxsbex178kU/WVz14E4e4laDXmxsbOyt7Ly1qMYAScPTi5Pz0Po/T8DGxsZexC78urWInJo3OZPjQUePhI2NjX17dl6Wejs6P9Yzj5CP6t5jY2NjP5BdvZM3A/kb5/+AUb6NjY2NvYI9j2PzjfhGMJA0KtjY2Nhb2dVDjd+IE5qAuGRiY2Nj72O/ilcSElTL0qQEVgvtkfQr2NjY2I9i9wpAr7T0DuXMnzzCY2NjYz+EXS1avRh4PuivtkmFDgwbGxt7BTsvDHlrMW9L3hy7acXJ2NjY2Nh5WzJZVlLq8hV+oIBhY2NjL2XnUXE1GM6DgVG+jY2Njb2InQyVqkWiWuQmIUSyWdjY2Nhb2dW2IV/EZIm9hqR3MAgbGxv7sew/Pj7tOSPBNqkAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

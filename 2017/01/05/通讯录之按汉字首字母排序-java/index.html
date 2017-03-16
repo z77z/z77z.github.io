@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>通讯录之按汉字首字母排序-java | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="java,排序,pinyin4J">
+    <meta name="description" content="最近开发手机端OA系统通讯录时遇到了用汉字首字母排序的问题，各种谷歌后发现了一个轮子pinyin4J，这个轮子是可以将汉字转换成字母拼音，个人觉得很好用，完美的解决了排序的问题，分享一下。
+
+原博客地址
+
+一.工具介绍 pinyin4j是一个支持将简体和繁体中文转换到成拼音的Java开源类库，作者是Li Min (xmlerlimin@gmail.com)。
+
+
+支持同一汉字有多个发音
+还支持拼音">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通讯录之按汉字首字母排序-java">
+<meta property="og:url" content="http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="最近开发手机端OA系统通讯录时遇到了用汉字首字母排序的问题，各种谷歌后发现了一个轮子pinyin4J，这个轮子是可以将汉字转换成字母拼音，个人觉得很好用，完美的解决了排序的问题，分享一下。
+
+原博客地址
+
+一.工具介绍 pinyin4j是一个支持将简体和繁体中文转换到成拼音的Java开源类库，作者是Li Min (xmlerlimin@gmail.com)。
+
+
+支持同一汉字有多个发音
+还支持拼音">
+<meta property="og:image" content="http://img.blog.csdn.net/20170105222342974">
+<meta property="og:updated_time" content="2017-01-05T14:56:36.420Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通讯录之按汉字首字母排序-java">
+<meta name="twitter:description" content="最近开发手机端OA系统通讯录时遇到了用汉字首字母排序的问题，各种谷歌后发现了一个轮子pinyin4J，这个轮子是可以将汉字转换成字母拼音，个人觉得很好用，完美的解决了排序的问题，分享一下。
+
+原博客地址
+
+一.工具介绍 pinyin4j是一个支持将简体和繁体中文转换到成拼音的Java开源类库，作者是Li Min (xmlerlimin@gmail.com)。
+
+
+支持同一汉字有多个发音
+还支持拼音">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170105222342974">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">通讯录之按汉字首字母排序-java</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">通讯录之按汉字首字母排序-java</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-01-05T02:49:58.000Z" itemprop="datePublished" class="page-time">
+  2017-01-05
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#一-工具介绍"><span class="post-toc-number">1.</span> <span class="post-toc-text">一.工具介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#二-转换代码"><span class="post-toc-number">2.</span> <span class="post-toc-text">二.转换代码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#三-实现-Comparable-接口并且使用内部类compare重载compareTo方法实现排序代码。"><span class="post-toc-number">3.</span> <span class="post-toc-text">三.实现 Comparable 接口并且使用内部类compare重载compareTo方法实现排序代码。</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#四-测试效果"><span class="post-toc-number">4.</span> <span class="post-toc-text">四.测试效果</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#五-那么问题来了"><span class="post-toc-number">5.</span> <span class="post-toc-text">五.那么问题来了</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#六-JUST-DO-IT"><span class="post-toc-number">6.</span> <span class="post-toc-text">六.JUST DO IT</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-通讯录之按汉字首字母排序-java"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">通讯录之按汉字首字母排序-java</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年01月05日 10:49" datetime="2017-01-05T02:49:58.000Z"  itemprop="datePublished">2017-01-05</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>最近开发手机端OA系统通讯录时遇到了用汉字首字母排序的问题，各种谷歌后发现了一个轮子<code>pinyin4J</code>，这个轮子是可以将汉字转换成字母拼音，个人觉得很好用，完美的解决了排序的问题，分享一下。</p>
+<hr>
+<p><a href="http://z77z.oschina.io">原博客地址</a></p>
+<hr>
+<h2 id="一-工具介绍"><a href="#一-工具介绍" class="headerlink" title="一.工具介绍"></a>一.工具介绍</h2><p> pinyin4j是一个支持将简体和繁体中文转换到成拼音的Java开源类库，作者是Li Min (xmlerlimin@gmail.com)。</p>
+<blockquote>
+<ul>
+<li>支持同一汉字有多个发音</li>
+<li>还支持拼音的格式化输出，比如第几声之类的，</li>
+<li>同时支持简体中文、繁体中文转换为拼音…使用起来也非常简单。下面是其官方网址，其中提供了下载：</li>
+<li>*pinyin4j的官方下载地址[<a href="http://sourceforge.net/projects/pinyin4j/files/" target="_blank" rel="external">http://sourceforge.net/projects/pinyin4j/files/</a>]</li>
+<li><em>本文只是使用了pinyin4J的主要功能，还有更多更好耍的功能，大家可以去研究官网文档。哈哈</em></li>
+</ul>
+</blockquote>
+<p>  下载解压后的目录结构及说明如下<br> (1)     <code>doc</code> : pinyin4j的api文档<br> (2)     <code>lib</code> : pinyin4j的jar包<br> (3)     <code>src</code>: pinyin4j的源代码<br> (4)     <code>CHANGELOG.txt</code> : pinyin4j的版本更新日志<br> (5)    <code>COPYING.txt</code> : LICENSE说明<br> (6)     <code>README.txt</code> : pinyin4j的概要介绍</p>
+<h2 id="二-转换代码"><a href="#二-转换代码" class="headerlink" title="二.转换代码"></a>二.转换代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 获取汉字的首字母大写</span></div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getFirstSpell</span><span class="params">(String string)</span> </span>&#123;</div><div class="line">StringBuffer pybf = <span class="keyword">new</span> StringBuffer();</div><div class="line"><span class="keyword">char</span>[] arr = string.toCharArray();</div><div class="line">HanyuPinyinOutputFormat defaultFormat = <span class="keyword">new</span> HanyuPinyinOutputFormat();</div><div class="line">defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);</div><div class="line">defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);</div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</div><div class="line">  <span class="keyword">if</span> (arr[i] &gt; <span class="number">128</span>) &#123; <span class="comment">//如果已经是字母就不用转换了</span></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="comment">//获取当前汉字的全拼</span></div><div class="line">      String[] temp = PinyinHelper.toHanyuPinyinStringArray(</div><div class="line">          arr[i], defaultFormat);</div><div class="line">      <span class="keyword">if</span> (temp != <span class="keyword">null</span>) &#123;</div><div class="line">        pybf.append(temp[<span class="number">0</span>].charAt(<span class="number">0</span>));<span class="comment">// 取首字母  </span></div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">catch</span> (BadHanyuPinyinOutputFormatCombination e) &#123;</div><div class="line">      e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">if</span> (arr[i] &gt;= <span class="string">'a'</span> &amp;&amp; arr[i] &lt;= <span class="string">'z'</span>) &#123;</div><div class="line">      arr[i] -= <span class="number">32</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">/*if (arr[0] &gt;= 'A' &amp;&amp; arr[0] &lt;= 'Z') &#123;// 将大写转换为小写</span></div><div class="line">      arr[0] += 32;</div><div class="line">    &#125;*/</div><div class="line">    pybf.append(arr[i]);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> pybf.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="三-实现-Comparable-接口并且使用内部类compare重载compareTo方法实现排序代码。"><a href="#三-实现-Comparable-接口并且使用内部类compare重载compareTo方法实现排序代码。" class="headerlink" title="三.实现 Comparable 接口并且使用内部类compare重载compareTo方法实现排序代码。"></a>三.实现 Comparable 接口并且使用内部类compare重载compareTo方法实现排序代码。</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Collections.sort(list, <span class="keyword">new</span> Comparator&lt;Map&lt;String, Object&gt;&gt;() &#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Map&lt;String, Object&gt; o1, Map&lt;String, Object&gt; o2)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> getFirstSpellOne((String) o1.get(<span class="string">"str"</span>))</div><div class="line">				.compareTo(</div><div class="line">						getFirstSpellOne((String) o2</div><div class="line">								.get(<span class="string">"str"</span>)));</div><div class="line">	&#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="四-测试效果"><a href="#四-测试效果" class="headerlink" title="四.测试效果"></a>四.测试效果</h2><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170105222342974" alt="测试效果" title="">
+                </div>
+                <div class="image-caption">测试效果</div>
+            </figure>
+<h2 id="五-那么问题来了"><a href="#五-那么问题来了" class="headerlink" title="五.那么问题来了"></a>五.那么问题来了</h2><p><strong>这个列子只能按字符串第一个字符的首字母来排序，比如字符串<code>张三</code>和<code>赵五</code>第一个字符首字母是一样的，那能不能再通过第二个字符<code>三</code>和<code>五</code>来进行排序呐。如果字符串的第二个字符首字母也是一样的呐，依次类推。希望哪位大神好的思路交流交流，带我装逼带我飞。。。</strong></p>
+<h2 id="六-JUST-DO-IT"><a href="#六-JUST-DO-IT" class="headerlink" title="六.JUST DO IT"></a>六.JUST DO IT</h2><p>。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-01-05T14:56:36.420Z" itemprop="dateUpdated">2017年1月5日 22:56</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/01/05/通讯录之按汉字首字母排序-java/" target="_blank" rel="external">http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pinyin4J/">pinyin4J</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排序/">排序</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&title=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&title=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">免费个人博客搭建教程（详细-图文）--Hexo+OSChina</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/01/02/js封装from表单数据为json串进行ajax提交/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">js封装from表单数据为json串进行ajax提交</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="通讯录之按汉字首字母排序-java" data-title="通讯录之按汉字首字母排序-java" data-url="http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&title=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&title=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《通讯录之按汉字首字母排序-java》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/05/通讯录之按汉字首字母排序-java/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACq0lEQVR42u3aQW7jMBAEwPz/097rXuTtniENZ1E6GY4ssRSAQ/Xw5yc+Xm+Pv895Or+9/uw6wwMPDw/vg0N/ulryq6frJGcmY8bDw8O7zcsH2s7G+V2SItFeDQ8PD+//47XFAA8PD+938U7FBDkVDw8P75t5SRgxjAPKiT7/fDhrwcPDw+vuXkzl3/D5Sn8PDw8Pb91Vb9v5SQAx+w+8RgceHh7eDd5s68AswJ09xPwujw8RDw8P7ygveYHPX/vbUCCPMPIwAg8PD+8270bD6f03+fltNPz4QPHw8PCO8vKfvQ8dZlsN3sPaQvVYEvDw8PCO8vJNUXlhaGfmthjkjxgPDw/vNi9vcc2KQfuM22X0P8oDHh4e3gXerK3VBhB14z+OHtoQGQ8PD+8sbxMizIbeTu7H3hjw8PDwroURedjaLrKTMLdtoeHh4eHd5rVNqXyJnEziN5pe0aYrPDw8vBGv3SDVLrLzgKN9ZNFI8PDw8C7z2h/vm09tqFEvr/Hw8PCu8fKl6o0Gfx5t1I06PDw8vI/wZgPNNw1sCkb+Vzw8PLx7vNl0n5eEWRz8MzqKR4mHh4d3lJcEsmeXv6s9Du2jwcPDw1vz8migHUre1tqMpG6A4eHh4a15eTuqXRbntaiFtaEJHh4e3g1eO1m3EUYbyObbXou3BDw8PLwLvPc3yM/JtwLkV3iVBx4eHt4nefvX/nbBfSMUfkxc8PDw8Na8zYSbf9O20PLyEG0UwMPDwzvK27Tn89vvi0ceZAzBeHh4eCVvEwdswtl8uElhGFY/PDw8vAUvDyM2jfxZ8ZitkPHw8PC+jTebvttNAO02ggMNMDw8PLxrvH0UO4sYhlk1Hh4e3gXerPk0WwRvWlx1Po2Hh4f38dbXZsmbTO6z4KPdlICHh4d3iPcH0how3f3x74AAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

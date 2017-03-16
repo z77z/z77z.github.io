@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,redis,shiro">
+    <meta name="description" content="发现问题，需找解决思路。之前我们整合Shiro，完成了登录认证和权限管理的实现，登录认证没什么说的，需要实现AuthorizingRealm中的doGetAuthenticationInfo方法进行认证，但是我们在实现doGetAuthorizationInfo权限控制这个方法的时候发现以下两个问题：
+
+第一个问题：我们在ShiroConfig中配置链接权限的时候，每次只要有一个新的链接，或则权限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存">
+<meta property="og:url" content="http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="发现问题，需找解决思路。之前我们整合Shiro，完成了登录认证和权限管理的实现，登录认证没什么说的，需要实现AuthorizingRealm中的doGetAuthenticationInfo方法进行认证，但是我们在实现doGetAuthorizationInfo权限控制这个方法的时候发现以下两个问题：
+
+第一个问题：我们在ShiroConfig中配置链接权限的时候，每次只要有一个新的链接，或则权限">
+<meta property="og:image" content="http://img.blog.csdn.net/20170216164400014?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-02-26T10:42:40.106Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存">
+<meta name="twitter:description" content="发现问题，需找解决思路。之前我们整合Shiro，完成了登录认证和权限管理的实现，登录认证没什么说的，需要实现AuthorizingRealm中的doGetAuthenticationInfo方法进行认证，但是我们在实现doGetAuthorizationInfo权限控制这个方法的时候发现以下两个问题：
+
+第一个问题：我们在ShiroConfig中配置链接权限的时候，每次只要有一个新的链接，或则权限">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170216164400014?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-02-17T14:12:58.000Z" itemprop="datePublished" class="page-time">
+  2017-02-17
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#发现问题，需找解决思路。"><span class="post-toc-number">1.</span> <span class="post-toc-text">发现问题，需找解决思路。</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#第一个问题解决步骤"><span class="post-toc-number">2.</span> <span class="post-toc-text">第一个问题解决步骤</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#第二个问题的解决步骤"><span class="post-toc-number">3.</span> <span class="post-toc-text">第二个问题的解决步骤</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结"><span class="post-toc-number">4.</span> <span class="post-toc-text">总结</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年02月17日 22:12" datetime="2017-02-17T14:12:58.000Z"  itemprop="datePublished">2017-02-17</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="发现问题，需找解决思路。"><a href="#发现问题，需找解决思路。" class="headerlink" title="发现问题，需找解决思路。"></a>发现问题，需找解决思路。</h2><p>之前我们整合Shiro，完成了登录认证和权限管理的实现，登录认证没什么说的，需要实现AuthorizingRealm中的doGetAuthenticationInfo方法进行认证，但是我们在实现doGetAuthorizationInfo权限控制这个方法的时候发现以下两个问题：</p>
+<ul>
+<li><p>第一个问题：我们在ShiroConfig中配置链接权限的时候，每次只要有一个新的链接，或则权限需要改动，都要在ShiroConfig.java中进行权限的修改。而且改动后还需要重新启动程序新的权限才会生效，很麻烦。<strong>解决办法</strong>就是将这些链接的权限存入数据库，在前端可以提供增删改查的功能，在配置文件中编写权限的时候从数据库读取，当权限发生变更的时候利用ShiroFilterFactoryBean的清空功能，先clear，再set。这样就可以做到到动态的管理权限了。</p>
+</li>
+<li><p>第二个问题：每次在访问设置了权限的页面时，都会去执行doGetAuthorizationInfo方法来判断当前用户是否具备访问权限，由于在实际情况中，权限是不会经常改变的。<strong>解决办法</strong>就是进行缓存处理。</p>
+</li>
+</ul>
+<p>个人博客：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></p>
+<p>此项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a></p>
+<h2 id="第一个问题解决步骤"><a href="#第一个问题解决步骤" class="headerlink" title="第一个问题解决步骤"></a>第一个问题解决步骤</h2><p><strong>建立数据库</strong></p>
+<p>我们从ShiroConfig中的<code>filterChainDefinitionMap.put(&quot;/add&quot;, &quot;perms[权限添加]&quot;);</code> 配置可以看出，我们需要存储链接，和链接需要具备的权限这两个关键字段。还有这个权限的读取是有顺序的，所以还要进行排序控制，所以我新建表为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">-- ----------------------------</div><div class="line">-- Table structure for sys_permission_init</div><div class="line">-- ----------------------------</div><div class="line">DROP TABLE IF EXISTS `sys_permission_init`;</div><div class="line">CREATE TABLE `sys_permission_init` (</div><div class="line">  `id` varchar(255) NOT NULL,</div><div class="line">  `url` varchar(255) DEFAULT NULL COMMENT &apos;链接地址&apos;,</div><div class="line">  `permission_init` varchar(255) DEFAULT NULL COMMENT &apos;需要具备的权限&apos;,</div><div class="line">  `sort` int(50) DEFAULT NULL COMMENT &apos;排序&apos;,</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure>
+<p><em>当然可以按实际情况进行表的设计，这里只做简单学习。</em></p>
+<p><strong>改造ShiroConfig.java</strong></p>
+<p>改造前：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shirFilter</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</div><div class="line">	ShiroFilterFactoryBean shiroFilterFactoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</div><div class="line"></div><div class="line">	<span class="comment">// 必须设置 SecurityManager</span></div><div class="line">	shiroFilterFactoryBean.setSecurityManager(securityManager);</div><div class="line"></div><div class="line">	<span class="comment">// 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面</span></div><div class="line">	shiroFilterFactoryBean.setLoginUrl(<span class="string">"/login"</span>);</div><div class="line">	<span class="comment">// 登录成功后要跳转的链接</span></div><div class="line">	shiroFilterFactoryBean.setSuccessUrl(<span class="string">"/index"</span>);</div><div class="line">	<span class="comment">// 未授权界面;</span></div><div class="line">	shiroFilterFactoryBean.setUnauthorizedUrl(<span class="string">"/403"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 拦截器.</span></div><div class="line">	Map&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();</div><div class="line">	<span class="comment">// 配置不会被拦截的链接 顺序判断</span></div><div class="line">	filterChainDefinitionMap.put(<span class="string">"/static/**"</span>, <span class="string">"anon"</span>);</div><div class="line">	filterChainDefinitionMap.put(<span class="string">"/ajaxLogin"</span>, <span class="string">"anon"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了</span></div><div class="line">	filterChainDefinitionMap.put(<span class="string">"/logout"</span>, <span class="string">"logout"</span>);</div><div class="line"></div><div class="line">	filterChainDefinitionMap.put(<span class="string">"/add"</span>, <span class="string">"perms[权限添加]"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// &lt;!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 --&gt;:这是一个坑呢，一不小心代码就不好使了;</span></div><div class="line">	<span class="comment">// &lt;!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问--&gt;</span></div><div class="line">	filterChainDefinitionMap.put(<span class="string">"/**"</span>, <span class="string">"authc"</span>);</div><div class="line"></div><div class="line">	shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);</div><div class="line">	System.out.println(<span class="string">"Shiro拦截器工厂类注入成功"</span>);</div><div class="line">	<span class="keyword">return</span> shiroFilterFactoryBean;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>改造后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shirFilter</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</div><div class="line">	ShiroFilterFactoryBean shiroFilterFactoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</div><div class="line"></div><div class="line">	<span class="comment">// 必须设置 SecurityManager</span></div><div class="line">	shiroFilterFactoryBean.setSecurityManager(securityManager);</div><div class="line"></div><div class="line">	<span class="comment">// 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面</span></div><div class="line">	shiroFilterFactoryBean.setLoginUrl(<span class="string">"/login"</span>);</div><div class="line">	<span class="comment">// 登录成功后要跳转的链接</span></div><div class="line">	shiroFilterFactoryBean.setSuccessUrl(<span class="string">"/index"</span>);</div><div class="line">	<span class="comment">// 未授权界面;</span></div><div class="line">	shiroFilterFactoryBean.setUnauthorizedUrl(<span class="string">"/403"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 权限控制map.</span></div><div class="line">	Map&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();</div><div class="line">	<span class="comment">//从数据库获取</span></div><div class="line">	List&lt;SysPermissionInit&gt; list = sysPermissionInitService.selectAll();</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (SysPermissionInit sysPermissionInit : list) &#123;</div><div class="line">		filterChainDefinitionMap.put(sysPermissionInit.getUrl(),</div><div class="line">				sysPermissionInit.getPermissionInit());</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	shiroFilterFactoryBean</div><div class="line">			.setFilterChainDefinitionMap(filterChainDefinitionMap);</div><div class="line">	System.out.println(<span class="string">"Shiro拦截器工厂类注入成功"</span>);</div><div class="line">	<span class="keyword">return</span> shiroFilterFactoryBean;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的selectAll()就是从数据库查询之前创建的权限管理列表，这里就不贴具体的查询代码了。</p>
+<p><strong>添加权限</strong></p>
+<p>在数据库中添加权限如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170216164400014?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title="">
+                </div>
+                <div class="image-caption">这里写图片描述</div>
+            </figure>
+<p>现在启动程序，在控制台可以发现启动的时候程序在数据库查询了权限的列表信息。做到这步之后还没有达到动态的目的，比如现在到数据库手动修改/add链接的权限，这时不重启程序，权限是不会修改的。</p>
+<p><strong>动态更改权限实现</strong></p>
+<p>ShiroService.java：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> 作者: z77z</div><div class="line"> * <span class="doctag">@date</span> 创建时间：2017年2月15日 下午4:16:07</div><div class="line"> */</div><div class="line"><span class="meta">@Service</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroService</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	ShiroFilterFactoryBean shiroFilterFactoryBean;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	SysPermissionInitService sysPermissionInitService;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 初始化权限</div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">loadFilterChainDefinitions</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 权限控制map.从数据库获取</span></div><div class="line">		Map&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();</div><div class="line">		List&lt;SysPermissionInit&gt; list = sysPermissionInitService.selectAll();</div><div class="line"></div><div class="line">		<span class="keyword">for</span> (SysPermissionInit sysPermissionInit : list) &#123;</div><div class="line">			filterChainDefinitionMap.put(sysPermissionInit.getUrl(),</div><div class="line">					sysPermissionInit.getPermissionInit());</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> filterChainDefinitionMap;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 重新加载权限</div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updatePermission</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">		<span class="keyword">synchronized</span> (shiroFilterFactoryBean) &#123;</div><div class="line"></div><div class="line">			AbstractShiroFilter shiroFilter = <span class="keyword">null</span>;</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				shiroFilter = (AbstractShiroFilter) shiroFilterFactoryBean</div><div class="line">						.getObject();</div><div class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">						<span class="string">"get ShiroFilter from shiroFilterFactoryBean error!"</span>);</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			PathMatchingFilterChainResolver filterChainResolver = (PathMatchingFilterChainResolver) shiroFilter</div><div class="line">					.getFilterChainResolver();</div><div class="line">			DefaultFilterChainManager manager = (DefaultFilterChainManager) filterChainResolver</div><div class="line">					.getFilterChainManager();</div><div class="line"></div><div class="line">			<span class="comment">// 清空老的权限控制</span></div><div class="line">			manager.getFilterChains().clear();</div><div class="line"></div><div class="line">			shiroFilterFactoryBean.getFilterChainDefinitionMap().clear();</div><div class="line">			shiroFilterFactoryBean</div><div class="line">					.setFilterChainDefinitionMap(loadFilterChainDefinitions());</div><div class="line">			<span class="comment">// 重新构建生成</span></div><div class="line">			Map&lt;String, String&gt; chains = shiroFilterFactoryBean</div><div class="line">					.getFilterChainDefinitionMap();</div><div class="line">			<span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : chains.entrySet()) &#123;</div><div class="line">				String url = entry.getKey();</div><div class="line">				String chainDefinition = entry.getValue().trim()</div><div class="line">						.replace(<span class="string">" "</span>, <span class="string">""</span>);</div><div class="line">				manager.createChain(url, chainDefinition);</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			System.out.println(<span class="string">"更新权限成功！！"</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样，可以在修改权限之后，执行updatePermission()这个方法，权限就会先被clear，然后重新查询权限列表后再set。动态修改就实现了！</p>
+<p>注意：在本学习项目里面，我在设置登录用户的权限的时候是写死了的，所以每个登录用户权限都是一样的，实际开发中在MyShiroRealm文件中设置登录用户的权限是从数据库获取的。还有在实际开发中sys_permission_init权限管理这种表是会在前端提供增删改查功能的，我学习的时候是直接在数据库手动修改。说到底，本人很懒！</p>
+<h2 id="第二个问题的解决步骤"><a href="#第二个问题的解决步骤" class="headerlink" title="第二个问题的解决步骤"></a>第二个问题的解决步骤</h2><p>我们知道Shiro 提供了一系列让我们自己实现的接口，包括org.apache.shiro.cache.CacheManager 、org.apache.shiro.cache.Cache  等接口。那么我们要对这些做实现，就实现了 Shiro  对 Session  和用户认证信息、用户缓存信息等的缓存，存储。我们可以用缓存，如 Redis  、 memcache  、 EHCache  等，甚至我们可以用数据库，如 Oracle  、 Mysql  等，都可以，只有效率的快慢问题，功能都可以达到。</p>
+<p>那么我的教程是采用了 Redis  ，而且是用了Jedis 。Jedis 可以实现pool 和hash 的集群Redis 。</p>
+<p>本来我想是在网上学习学习，自己实现redis的集成。最后发现已经有大神已经做了这个插件，对shiro提供的CacheManager，Cache  ，这些接口使用redis都有了很好的实现。我就不需要再费心学习了，我们就直接拿来用。</p>
+<p><strong>pom.xml依赖添加</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- shiro+redis缓存插件 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.crazycake<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.2.1-RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>改造ShiroConfig.java文件</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@author</span> 作者 z77z</div><div class="line"> * <span class="doctag">@date</span> 创建时间：2017年2月10日 下午1:16:38</div><div class="line"> * </div><div class="line"> */</div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroConfig</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	SysPermissionInitService sysPermissionInitService;</div><div class="line"></div><div class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;spring.redis.host&#125;"</span>)</div><div class="line">	<span class="keyword">private</span> String host;</div><div class="line"></div><div class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;spring.redis.port&#125;"</span>)</div><div class="line">	<span class="keyword">private</span> <span class="keyword">int</span> port;</div><div class="line">	</div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shirFilter</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</div><div class="line">		ShiroFilterFactoryBean shiroFilterFactoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</div><div class="line"></div><div class="line">		<span class="comment">// 必须设置 SecurityManager</span></div><div class="line">		shiroFilterFactoryBean.setSecurityManager(securityManager);</div><div class="line"></div><div class="line">		<span class="comment">// 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面</span></div><div class="line">		shiroFilterFactoryBean.setLoginUrl(<span class="string">"/login"</span>);</div><div class="line">		<span class="comment">// 登录成功后要跳转的链接</span></div><div class="line">		shiroFilterFactoryBean.setSuccessUrl(<span class="string">"/index"</span>);</div><div class="line">		<span class="comment">// 未授权界面;</span></div><div class="line">		shiroFilterFactoryBean.setUnauthorizedUrl(<span class="string">"/403"</span>);</div><div class="line"></div><div class="line">		<span class="comment">// 权限控制map.</span></div><div class="line">		Map&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;String, String&gt;();</div><div class="line">		<span class="comment">// 从数据库获取</span></div><div class="line">		List&lt;SysPermissionInit&gt; list = sysPermissionInitService.selectAll();</div><div class="line"></div><div class="line">		<span class="keyword">for</span> (SysPermissionInit sysPermissionInit : list) &#123;</div><div class="line">			filterChainDefinitionMap.put(sysPermissionInit.getUrl(),</div><div class="line">					sysPermissionInit.getPermissionInit());</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		shiroFilterFactoryBean</div><div class="line">				.setFilterChainDefinitionMap(filterChainDefinitionMap);</div><div class="line">		System.out.println(<span class="string">"Shiro拦截器工厂类注入成功"</span>);</div><div class="line">		<span class="keyword">return</span> shiroFilterFactoryBean;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span> </span>&#123;</div><div class="line">		DefaultWebSecurityManager securityManager = <span class="keyword">new</span> DefaultWebSecurityManager();</div><div class="line">		<span class="comment">// 设置realm.</span></div><div class="line">		securityManager.setRealm(myShiroRealm());</div><div class="line">		<span class="comment">// 自定义缓存实现 使用redis</span></div><div class="line">		securityManager.setCacheManager(cacheManager());</div><div class="line">		<span class="comment">// 自定义session管理 使用redis</span></div><div class="line">		securityManager.setSessionManager(SessionManager());</div><div class="line">		<span class="keyword">return</span> securityManager;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 身份认证realm; (这个需要自己写，账号密码校验；权限等)</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@return</span></div><div class="line">	 */</div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> MyShiroRealm <span class="title">myShiroRealm</span><span class="params">()</span> </span>&#123;</div><div class="line">		MyShiroRealm myShiroRealm = <span class="keyword">new</span> MyShiroRealm();</div><div class="line">		<span class="keyword">return</span> myShiroRealm;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 配置shiro redisManager</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@return</span></div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> RedisManager <span class="title">redisManager</span><span class="params">()</span> </span>&#123;</div><div class="line">		RedisManager redisManager = <span class="keyword">new</span> RedisManager();</div><div class="line">		redisManager.setHost(host);</div><div class="line">		redisManager.setPort(port);</div><div class="line">		redisManager.setExpire(<span class="number">1800</span>);<span class="comment">// 配置过期时间</span></div><div class="line">		<span class="comment">// redisManager.setTimeout(timeout);</span></div><div class="line">		<span class="comment">// redisManager.setPassword(password);</span></div><div class="line">		<span class="keyword">return</span> redisManager;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * cacheManager 缓存 redis实现</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@return</span></div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> RedisCacheManager <span class="title">cacheManager</span><span class="params">()</span> </span>&#123;</div><div class="line">		RedisCacheManager redisCacheManager = <span class="keyword">new</span> RedisCacheManager();</div><div class="line">		redisCacheManager.setRedisManager(redisManager());</div><div class="line">		<span class="keyword">return</span> redisCacheManager;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * RedisSessionDAO shiro sessionDao层的实现 通过redis</div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> RedisSessionDAO <span class="title">redisSessionDAO</span><span class="params">()</span> </span>&#123;</div><div class="line">		RedisSessionDAO redisSessionDAO = <span class="keyword">new</span> RedisSessionDAO();</div><div class="line">		redisSessionDAO.setRedisManager(redisManager());</div><div class="line">		<span class="keyword">return</span> redisSessionDAO;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * shiro session的管理</div><div class="line">	 */</div><div class="line">	<span class="function"><span class="keyword">public</span> DefaultWebSessionManager <span class="title">SessionManager</span><span class="params">()</span> </span>&#123;</div><div class="line">		DefaultWebSessionManager sessionManager = <span class="keyword">new</span> DefaultWebSessionManager();</div><div class="line">		sessionManager.setSessionDAO(redisSessionDAO());</div><div class="line">		<span class="keyword">return</span> sessionManager;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里，因为使用的是redis来做容器缓存，所以要创建redisManager来配置shiro，SessionManager()，cacheManager()这两个类都是插件给我们写好了的，里面就是对shiro提供的接口的redis实现方式。</p>
+<p>使用插件就是这么简单，直接启动程序，多访问几次具有权限的页面，查看控制台发现，权限认证方法：MyShiroRealm.doGetAuthorizationInfo()会只执行了一次。说明我们的缓存生效了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到此，我们集成shiro和redis，学习了一下功能的实现：</p>
+<ol>
+<li>用户必须要登陆之后才能访问定义链接，否则跳转到登录页面，被禁用户不能登录。并且对一些敏感操作链接设置权限，只有满足权限的才可以访问。</li>
+<li>每个链接的权限信息保存在数据库，可以动态进行设置，并且热加载权限。</li>
+<li>使用redis对shiro的用户信息进行缓存，不用每次都去执行MyShiroRealm.doGetAuthorizationInfo()权限认证方法。</li>
+<li>之前有很多同学下载我的项目时，运行会报错，那是因为最近都在不断修改提交，有可能会出现版本问题，现在我在我的码云上面创建了stable_version分支，都是可以跑起来的。sqltable放在resource目录下面。</li>
+<li>下一博，我应该会写对在线用户的管理，踢出登录的功能学习记录。</li>
+</ol>
+<p>香蕉硬币点赞走一波啦。。。。。。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-02-26T10:42:40.106Z" itemprop="dateUpdated">2017年2月26日 18:42</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" target="_blank" rel="external">http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/">shiro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&title=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&title=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/02/13/SpringBoot+shiro整合学习之登录认证和权限控制/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SpringBoot+shiro整合学习之登录认证和权限控制</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存" data-title="SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存" data-url="http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&title=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&title=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADKUlEQVR42u3aMXLjQAwEQP3/03biwAmpAUBWiVAzuipTq+1VgMNgX6/4+Tl9/r8zWfNonfOVq9/7wsbGxl7HzklHX5BsdH4oya6ST2FjY2NvZZ9jjhg9Xv7ZBJwUUWxsbGzs6oaSUnS+Tq8FwsbGxsZO2EnEUw2bkuYhKXvY2NjY38yuRv/JtnrgBHD+k1ycpWFjY2N/PDsP6z//37fMt7GxsbE/mP1TfKoNwGTEe16cevv/+yw2Njb2IvYdoU8OnjQJk4YHGxsbex97Hi1NLtYkBWkSJ43aEmxsbOyHsPPNVQ8lWb9XDqs/CTY2NvY3sCfD2h6j2vDkB3EuwsbGxt7EnlzKiU40Dobyd/KSeVjMsLGxsRexq8gqtXdBM29d8v1EDQk2Njb2Y9nNeUJrAJz/NQGUf1tsbGzsdexJoJ+PDZI3e1W3t39sbGzsTew80JkUp/zg8nI13wk2Njb2VnYe3FxVrvL1e9d6CpMKbGxs7Meyq/9l7wVPd/w12dWhCxsbG3sRe94kJA1MUuqqrVEeIUVNCDY2NvZSdo/Uu5RTRVbbkkIBw8bGxn4UOxmX9mL3XulKjq96KM2LO9jY2NgPZE9CnF5zUg36E1jUVmFjY2MvYueFJ2khkgI5aWmSJqRZ2LCxsbEfy86Xztn5Ole1QxfUbWxsbOyl7F7BmDckvXaicP0IGxsbeyk7j5Z68dN86Fs9xDeTbWxsbOyHsyfNQDVs6jUbvdHFmzEDNjY29jp2NaZJnuqQeNJa5O0KNjY29j72VaPWeZRfHULkFzffhErY2NjYq9m9RXvr9MbD+cEdZmnY2NjY69jVxuOqFqIaEuUhVFTAsLGxsVew89CnOirI17nvyN6Me7GxsbEfy+6F/vMYqBcb5StHV3awsbGxV7B7BeCqqzPVApn/DNWDw8bGxn46u7p0PridPHlBag6GsbGxsdexe6HPfFuTcpWXzMMCho2Njf317Pz9a4fB1eOLTgUbGxv7K9n59Z1kqFyNrvJ3bmlFsLGxsT+MnTQAeazfGzAk394sV5PxADY2NvbHs3sBzTxIqpaf3iFWvxEbGxv7Uexfg4mvW7qnabwAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

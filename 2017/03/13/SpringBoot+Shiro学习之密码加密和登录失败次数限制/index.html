@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+Shiro学习之密码加密和登录失败次数限制 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,redis,shiro">
+    <meta name="description" content="这个项目写到现在，基本的雏形出来了，在此感谢一直关注的童鞋，送你们一句最近刚学习的一句鸡汤：念念不忘，必有回响。再贴一张ui图片：
+
+                
+                    
+                    
+                
+                z77z后台管理系统
+            
+·················">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+Shiro学习之密码加密和登录失败次数限制">
+<meta property="og:url" content="http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="这个项目写到现在，基本的雏形出来了，在此感谢一直关注的童鞋，送你们一句最近刚学习的一句鸡汤：念念不忘，必有回响。再贴一张ui图片：
+
+                
+                    
+                    
+                
+                z77z后台管理系统
+            
+·················">
+<meta property="og:image" content="http://img.blog.csdn.net/20170313201203428?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-03-13T15:53:46.331Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+Shiro学习之密码加密和登录失败次数限制">
+<meta name="twitter:description" content="这个项目写到现在，基本的雏形出来了，在此感谢一直关注的童鞋，送你们一句最近刚学习的一句鸡汤：念念不忘，必有回响。再贴一张ui图片：
+
+                
+                    
+                    
+                
+                z77z后台管理系统
+            
+·················">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170313201203428?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+Shiro学习之密码加密和登录失败次数限制</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+Shiro学习之密码加密和登录失败次数限制</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-03-13T15:53:22.000Z" itemprop="datePublished" class="page-time">
+  2017-03-13
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#前篇思考问题解决"><span class="post-toc-number">1.</span> <span class="post-toc-text">前篇思考问题解决</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#目标："><span class="post-toc-number">2.</span> <span class="post-toc-text">目标：</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#实现目标一："><span class="post-toc-number">3.</span> <span class="post-toc-text">实现目标一：</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#实现目标二"><span class="post-toc-number">4.</span> <span class="post-toc-text">实现目标二</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+Shiro学习之密码加密和登录失败次数限制"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+Shiro学习之密码加密和登录失败次数限制</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年03月13日 23:53" datetime="2017-03-13T15:53:22.000Z"  itemprop="datePublished">2017-03-13</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>这个项目写到现在，基本的雏形出来了，在此感谢一直关注的童鞋，送你们一句最近刚学习的一句鸡汤：<strong>念念不忘，必有回响。</strong>再贴一张ui图片：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170313201203428?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="z77z后台管理系统" title="">
+                </div>
+                <div class="image-caption">z77z后台管理系统</div>
+            </figure>
+<p>·······················································································································································</p>
+<p>个人博客：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></p>
+<p>此项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a></p>
+<p>·······················································································································································</p>
+<h2 id="前篇思考问题解决"><a href="#前篇思考问题解决" class="headerlink" title="前篇思考问题解决"></a>前篇思考问题解决</h2><hr>
+<ol>
+<li>前篇我们只是完成了同一账户的登录人数限制shiro拦截器的编写，对于手动踢出用户的功能只是说了采用在session域中添加一个key为kickout的布尔值，由之前编写的KickoutSessionControlFilter拦截器来判断是否将用户踢出，还没有说怎么获取当前在线用户的列表的核心代码，下面贴出来：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;p&gt;</div><div class="line"> * 服务实现类</div><div class="line"> * &lt;/p&gt;</div><div class="line"> *</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> * <span class="doctag">@since</span> 2017-02-10</div><div class="line"> */</div><div class="line"><span class="meta">@Service</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserService</span> <span class="keyword">extends</span> <span class="title">ServiceImpl</span>&lt;<span class="title">SysUserMapper</span>, <span class="title">SysUser</span>&gt; </span>&#123;</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	RedisSessionDAO redisSessionDAO;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> Page&lt;UserOnlineBo&gt; <span class="title">getPagePlus</span><span class="params">(FrontPage&lt;UserOnlineBo&gt; frontPage)</span> </span>&#123;</div><div class="line">		<span class="comment">// 因为我们是用redis实现了shiro的session的Dao,而且是采用了shiro+redis这个插件</span></div><div class="line">		<span class="comment">// 所以从spring容器中获取redisSessionDAO</span></div><div class="line">		<span class="comment">// 来获取session列表.</span></div><div class="line">		Collection&lt;Session&gt; sessions = redisSessionDAO.getActiveSessions();</div><div class="line">		Iterator&lt;Session&gt; it = sessions.iterator();</div><div class="line">		List&lt;UserOnlineBo&gt; onlineUserList = <span class="keyword">new</span> ArrayList&lt;UserOnlineBo&gt;();</div><div class="line">		Page&lt;UserOnlineBo&gt; pageList = frontPage.getPagePlus();</div><div class="line">		<span class="comment">// 遍历session</span></div><div class="line">		<span class="keyword">while</span> (it.hasNext()) &#123;</div><div class="line">			<span class="comment">// 这是shiro已经存入session的</span></div><div class="line">			<span class="comment">// 现在直接取就是了</span></div><div class="line">			Session session = it.next();</div><div class="line">			<span class="comment">// 如果被标记为踢出就不显示</span></div><div class="line">			Object obj = session.getAttribute(<span class="string">"kickout"</span>);</div><div class="line">			<span class="keyword">if</span> (obj != <span class="keyword">null</span>)</div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			UserOnlineBo onlineUser = getSessionBo(session);</div><div class="line">			onlineUserList.add(onlineUser);</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// 再将List&lt;UserOnlineBo&gt;转换成mybatisPlus封装的page对象</span></div><div class="line">		<span class="keyword">int</span> page = frontPage.getPage() - <span class="number">1</span>;</div><div class="line">		<span class="keyword">int</span> rows = frontPage.getRows() - <span class="number">1</span>;</div><div class="line">		<span class="keyword">int</span> startIndex = page * rows;</div><div class="line">		<span class="keyword">int</span> endIndex = (page * rows) + rows;</div><div class="line">		<span class="keyword">int</span> size = onlineUserList.size();</div><div class="line">		<span class="keyword">if</span> (endIndex &gt; size) &#123;</div><div class="line">			endIndex = size;</div><div class="line">		&#125;</div><div class="line">		pageList.setRecords(onlineUserList.subList(startIndex, endIndex));</div><div class="line">		pageList.setTotal(size);</div><div class="line">		<span class="keyword">return</span> pageList;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//从session中获取UserOnline对象</span></div><div class="line">	<span class="function"><span class="keyword">private</span> UserOnlineBo <span class="title">getSessionBo</span><span class="params">(Session session)</span></span>&#123;</div><div class="line">		<span class="comment">//获取session登录信息。</span></div><div class="line">		Object obj = session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);</div><div class="line">		<span class="keyword">if</span>(<span class="keyword">null</span> == obj)&#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="comment">//确保是 SimplePrincipalCollection对象。</span></div><div class="line">		<span class="keyword">if</span>(obj <span class="keyword">instanceof</span> SimplePrincipalCollection)&#123;</div><div class="line">			SimplePrincipalCollection spc = (SimplePrincipalCollection)obj;</div><div class="line">			<span class="comment">/**</span></div><div class="line">			 * 获取用户登录的，<span class="doctag">@link</span> SampleRealm.doGetAuthenticationInfo(...)方法中</div><div class="line">			 * return new SimpleAuthenticationInfo(user,user.getPswd(), getName());的user 对象。</div><div class="line">			 */</div><div class="line">			obj = spc.getPrimaryPrincipal();</div><div class="line">			<span class="keyword">if</span>(<span class="keyword">null</span> != obj &amp;&amp; obj <span class="keyword">instanceof</span> SysUser)&#123;</div><div class="line">				<span class="comment">//存储session + user 综合信息</span></div><div class="line">				UserOnlineBo userBo = <span class="keyword">new</span> UserOnlineBo((SysUser)obj);</div><div class="line">				<span class="comment">//最后一次和系统交互的时间</span></div><div class="line">				userBo.setLastAccess(session.getLastAccessTime());</div><div class="line">				<span class="comment">//主机的ip地址</span></div><div class="line">				userBo.setHost(session.getHost());</div><div class="line">				<span class="comment">//session ID</span></div><div class="line">				userBo.setSessionId(session.getId().toString());</div><div class="line">				<span class="comment">//session最后一次与系统交互的时间</span></div><div class="line">				userBo.setLastLoginTime(session.getLastAccessTime());</div><div class="line">				<span class="comment">//回话到期 ttl(ms)</span></div><div class="line">				userBo.setTimeout(session.getTimeout());</div><div class="line">				<span class="comment">//session创建时间</span></div><div class="line">				userBo.setStartTime(session.getStartTimestamp());</div><div class="line">				<span class="comment">//是否踢出</span></div><div class="line">				userBo.setSessionStatus(<span class="keyword">false</span>);</div><div class="line">				<span class="keyword">return</span> userBo;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码中注释比较完善，也可以去下载源码查看，这样结合看，跟容易理解，不懂的在评论区留言，看见必回！</p>
+<ol>
+<li>对Ajax请求的优化：这里有一个前提，我们知道Ajax不能做页面redirect和forward跳转，所以Ajax请求假如没登录，那么这个请求给用户的感觉就是没有任何反应，而用户又不知道用户已经退出了。也就是说在KickoutSessionControlFilter拦截器拦截后，正常如果被踢出，就会跳转到被踢出的提示页面，如果是Ajax请求，给用户的感觉就是没有感觉，核心解决代码如下：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Map&lt;String, String&gt; resultMap = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</div><div class="line"><span class="comment">//判断是不是Ajax请求</span></div><div class="line"><span class="keyword">if</span> (<span class="string">"XMLHttpRequest"</span>.equalsIgnoreCase(((HttpServletRequest) request).getHeader(<span class="string">"X-Requested-With"</span>))) &#123;</div><div class="line">	resultMap.put(<span class="string">"user_status"</span>, <span class="string">"300"</span>);</div><div class="line">	resultMap.put(<span class="string">"message"</span>, <span class="string">"您已经在其他地方登录，请重新登录！"</span>);</div><div class="line">	<span class="comment">//输出json串</span></div><div class="line">	out(response, resultMap);</div><div class="line">&#125;<span class="keyword">else</span>&#123;</div><div class="line">	<span class="comment">//重定向</span></div><div class="line">	WebUtils.issueRedirect(request, response, kickoutUrl);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">out</span><span class="params">(ServletResponse hresponse, Map&lt;String, String&gt; resultMap)</span></span></div><div class="line">	<span class="keyword">throws</span> IOException &#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		hresponse.setCharacterEncoding(<span class="string">"UTF-8"</span>);</div><div class="line">		PrintWriter out = hresponse.getWriter();</div><div class="line">		out.println(JSON.toJSONString(resultMap));</div><div class="line">		out.flush();</div><div class="line">		out.close();</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		System.err.println(<span class="string">"KickoutSessionFilter.class 输出JSON异常，可以忽略。"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是在KickoutSessionControlFilter这个拦截器里面做的修改。</p>
+<h2 id="目标："><a href="#目标：" class="headerlink" title="目标："></a>目标：</h2><hr>
+<ol>
+<li><p>现在项目里面的密码整个流程都是以明文的方式传递的。这样在实际应用中是很不安全的，京东，开源中国等这些大公司都有泄库事件，这样对用户的隐私造成巨大的影响，所以将密码加密存储传输就非常必要了。</p>
+</li>
+<li><p>密码重试次数限制，也是出于安全性的考虑。</p>
+</li>
+</ol>
+<h2 id="实现目标一："><a href="#实现目标一：" class="headerlink" title="实现目标一："></a>实现目标一：</h2><hr>
+<p>shiro本身是有对密码加密进行实现的，提供了PasswordService及CredentialsMatcher用于提供加密密码及验证密码服务。这里我觉得这种过于麻烦，大家有需要可以去看这篇博客：<a href="http://jinnianshilongnian.iteye.com/blog/2021439" target="_blank" rel="external">shiro加密解密</a>。</p>
+<p>我就是自己实现的EDS加密，并且保存的加密明文是采用password+username的方式，减小了密码相同，密文也相同的问题，这里我只是贴一下，EDS的加密解密代码，另外我还改了MyShiroRealm文件，再查数据库的时候加密后再查，而且在创建用户的时候不要忘记的加密存到数据库。这里就补贴代码了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * DES加密解密</div><div class="line"> * </div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> * <span class="doctag">@datetime</span> 2017-3-13</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyDES</span> </span>&#123;</div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * DES算法密钥</div><div class="line">	 */</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] DES_KEY = &#123; <span class="number">21</span>, <span class="number">1</span>, -<span class="number">110</span>, <span class="number">82</span>, -<span class="number">32</span>, -<span class="number">85</span>, -<span class="number">128</span>, -<span class="number">65</span> &#125;;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 数据加密，算法（DES）</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> data</div><div class="line">	 *            要进行加密的数据</div><div class="line">	 * <span class="doctag">@return</span> 加密后的数据</div><div class="line">	 */</div><div class="line">	<span class="meta">@SuppressWarnings</span>(<span class="string">"restriction"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">encryptBasedDes</span><span class="params">(String data)</span> </span>&#123;</div><div class="line">		String encryptedData = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="comment">// DES算法要求有一个可信任的随机数源</span></div><div class="line">			SecureRandom sr = <span class="keyword">new</span> SecureRandom();</div><div class="line">			DESKeySpec deskey = <span class="keyword">new</span> DESKeySpec(DES_KEY);</div><div class="line">			<span class="comment">// 创建一个密匙工厂，然后用它把DESKeySpec转换成一个SecretKey对象</span></div><div class="line">			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(<span class="string">"DES"</span>);</div><div class="line">			SecretKey key = keyFactory.generateSecret(deskey);</div><div class="line">			<span class="comment">// 加密对象</span></div><div class="line">			Cipher cipher = Cipher.getInstance(<span class="string">"DES"</span>);</div><div class="line">			cipher.init(Cipher.ENCRYPT_MODE, key, sr);</div><div class="line">			<span class="comment">// 加密，并把字节数组编码成字符串</span></div><div class="line">			encryptedData = <span class="keyword">new</span> sun.misc.BASE64Encoder().encode(cipher.doFinal(data.getBytes()));</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="comment">// log.error("加密错误，错误信息：", e);</span></div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"加密错误，错误信息："</span>, e);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> encryptedData;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 数据解密，算法（DES）</div><div class="line">	 * </div><div class="line">	 * <span class="doctag">@param</span> cryptData</div><div class="line">	 *            加密数据</div><div class="line">	 * <span class="doctag">@return</span> 解密后的数据</div><div class="line">	 */</div><div class="line">	<span class="meta">@SuppressWarnings</span>(<span class="string">"restriction"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">decryptBasedDes</span><span class="params">(String cryptData)</span> </span>&#123;</div><div class="line">		String decryptedData = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="comment">// DES算法要求有一个可信任的随机数源</span></div><div class="line">			SecureRandom sr = <span class="keyword">new</span> SecureRandom();</div><div class="line">			DESKeySpec deskey = <span class="keyword">new</span> DESKeySpec(DES_KEY);</div><div class="line">			<span class="comment">// 创建一个密匙工厂，然后用它把DESKeySpec转换成一个SecretKey对象</span></div><div class="line">			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(<span class="string">"DES"</span>);</div><div class="line">			SecretKey key = keyFactory.generateSecret(deskey);</div><div class="line">			<span class="comment">// 解密对象</span></div><div class="line">			Cipher cipher = Cipher.getInstance(<span class="string">"DES"</span>);</div><div class="line">			cipher.init(Cipher.DECRYPT_MODE, key, sr);</div><div class="line">			<span class="comment">// 把字符串解码为字节数组，并解密</span></div><div class="line">			decryptedData = <span class="keyword">new</span> String(cipher.doFinal(<span class="keyword">new</span> sun.misc.BASE64Decoder().decodeBuffer(cryptData)));</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			<span class="comment">// log.error("解密错误，错误信息：", e);</span></div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"解密错误，错误信息："</span>, e);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> decryptedData;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		String str = <span class="string">"123456"</span>;</div><div class="line">		<span class="comment">// DES数据加密</span></div><div class="line">		String s1 = encryptBasedDes(str);</div><div class="line">		System.out.println(s1);</div><div class="line">		<span class="comment">// DES数据解密</span></div><div class="line">		String s2 = decryptBasedDes(s1);</div><div class="line">		System.err.println(s2);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="实现目标二"><a href="#实现目标二" class="headerlink" title="实现目标二"></a>实现目标二</h2><hr>
+<p>如在1个小时内密码最多重试5次，如果尝试次数超过5次就锁定1小时，1小时后可再次重试，如果还是重试失败，可以锁定如1天，以此类推，防止密码被暴力破解。我们使用redis数据库来保存当前用户登录次数，也就是执行身份认证方法：MyShiroRealm.doGetAuthenticationInfo()的次数，如果登录成功就清空计数。超过就返回相应错误信息。根据这个逻辑，修改MyShiroRealm.java如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* 认证信息.(身份验证) : Authentication 是用来验证用户身份</div><div class="line"> * </div><div class="line"> * <span class="doctag">@param</span> token</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> * <span class="doctag">@throws</span> AuthenticationException</div><div class="line"> */</div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(</span></span></div><div class="line">		AuthenticationToken authcToken) <span class="keyword">throws</span> AuthenticationException &#123;</div><div class="line">	</div><div class="line">	</div><div class="line">	System.out.println(<span class="string">"身份认证方法：MyShiroRealm.doGetAuthenticationInfo()"</span>);</div><div class="line">	</div><div class="line">	UsernamePasswordToken token = (UsernamePasswordToken) authcToken;</div><div class="line">	String name = token.getUsername();</div><div class="line">	String password = String.valueOf(token.getPassword());</div><div class="line">	<span class="comment">//访问一次，计数一次</span></div><div class="line">	ValueOperations&lt;String, String&gt; opsForValue = stringRedisTemplate.opsForValue();</div><div class="line">	opsForValue.increment(SHIRO_LOGIN_COUNT+name, <span class="number">1</span>);</div><div class="line">	<span class="comment">//计数大于5时，设置用户被锁定一小时</span></div><div class="line">	<span class="keyword">if</span>(Integer.parseInt(opsForValue.get(SHIRO_LOGIN_COUNT+name))&gt;=<span class="number">5</span>)&#123;</div><div class="line">		opsForValue.set(SHIRO_IS_LOCK+name, <span class="string">"LOCK"</span>);</div><div class="line">		stringRedisTemplate.expire(SHIRO_IS_LOCK+name, <span class="number">1</span>, TimeUnit.HOURS);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (<span class="string">"LOCK"</span>.equals(opsForValue.get(SHIRO_IS_LOCK+name)))&#123;</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> DisabledAccountException(<span class="string">"由于密码输入错误次数大于5次，帐号已经禁止登录！"</span>);</div><div class="line">	&#125;</div><div class="line">	Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</div><div class="line">	map.put(<span class="string">"nickname"</span>, name);</div><div class="line">	<span class="comment">//密码进行加密处理  明文为  password+name</span></div><div class="line">	String paw = password+name;</div><div class="line">	String pawDES = MyDES.encryptBasedDes(paw);</div><div class="line">	map.put(<span class="string">"pswd"</span>, pawDES);</div><div class="line">	SysUser user = <span class="keyword">null</span>;</div><div class="line">	<span class="comment">// 从数据库获取对应用户名密码的用户</span></div><div class="line">	List&lt;SysUser&gt; userList = sysUserService.selectByMap(map);</div><div class="line">	<span class="keyword">if</span>(userList.size()!=<span class="number">0</span>)&#123;</div><div class="line">		user = userList.get(<span class="number">0</span>);</div><div class="line">	&#125; </div><div class="line">	<span class="keyword">if</span> (<span class="keyword">null</span> == user) &#123;</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> AccountException(<span class="string">"帐号或密码不正确！"</span>);</div><div class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(user.getStatus()==<span class="number">0</span>)&#123;</div><div class="line">		<span class="comment">/**</span></div><div class="line">		 * 如果用户的status为禁用。那么就抛出&lt;code&gt;DisabledAccountException&lt;/code&gt;</div><div class="line">		 */</div><div class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> DisabledAccountException(<span class="string">"此帐号已经设置为禁止登录！"</span>);</div><div class="line">	&#125;<span class="keyword">else</span>&#123;</div><div class="line">		<span class="comment">//登录成功</span></div><div class="line">		<span class="comment">//更新登录时间 last login time</span></div><div class="line">		user.setLastLoginTime(<span class="keyword">new</span> Date());</div><div class="line">		sysUserService.updateById(user);</div><div class="line">		<span class="comment">//清空登录计数</span></div><div class="line">		opsForValue.set(SHIRO_LOGIN_COUNT+name, <span class="string">"0"</span>);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="keyword">new</span> SimpleAuthenticationInfo(user, password, getName());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-03-13T15:53:46.331Z" itemprop="dateUpdated">2017年3月13日 23:53</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" target="_blank" rel="external">http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/">shiro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&title=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&title=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+Shiro学习之密码加密和登录失败次数限制" data-title="SpringBoot+Shiro学习之密码加密和登录失败次数限制" data-url="http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&title=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&title=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之密码加密和登录失败次数限制》 — z77z的小码窝&url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADNElEQVR42u3ay27iQBAF0Pz/T3u2kTKYe6tBopvjVQTG9CkWlXr8/MTX9ev6+/qjO/++++izyXMePe3+W5YubGxs7E3Y1+31iP0qWH6S+/tzCzY2Nvap7PzQ9/e34UgSZB6+IslhY2Njfz07SR7J0a/4yp+GjY2Njd0WEvmx8t5O3jzCxsbGxs7TRvupWZc+L3jadIiNjY19Kjs/3Of//Zb5NjY2NvYHs6/ymg1lZyktL3JqBTY2NvZB7PxY7RJPPu6dZd02rNjY2NinspN2/KtGvHlR8dqBcR1vbGxs7K3YyRg1H/rm5cp9UPLRcl4sYWNjY5/KfkdpMVvcycOUB+Lh69jY2NgHsfM01q7UtEkxv6c9Q5TDsbGxsQ9iv68IycM3a061gcDGxsY+ib0yoM0B60OFlQRW1z3Y2NjYm7Dz5FE0aMoWVT4AzouKJ8/HxsbG/hp2uy6TrwGtrA0lyezJt2BjY2Mfx84Lhlnjfr0ImZ3qyQwEGxsb+wj27BHX6JoNldsBQBEIbGxs7CPYs7TUtpzyoBTppxxX/Od3xsbGxj6anSeJHJkHt20ttcUPNjY29knsWWGw3hJaX9xsG1jF+g42Njb2Vuz2KHk6mQ0GZsOG5JzDvI2NjY29FXvWxG8PXRwuBtdhxcbGxj6I3bZ4Vnj1seLSYnh+bGxs7CPY7fC1bf2spJmixV+GCRsbG/skdrso0w5675HJu7NiJnoyNjY29qHslbIhGRW0KWdWrkRhxcbGxj6OPRvftus4ebmSB2W4HoSNjY19EHu9zZSnnPaIK4OB/IfExsbG3p2dJ7AkHG0SSvr2bVpKUiw2Njb2eeyc+oItoVG48zAVCQwbGxv7aPbsX/+V5+dFRTuiqKci2NjY2Juwr/LK20Ztq2i2mpk/+ck8BBsbG3tb9iwBtF+Zp7F2rNuWIjUeGxsbexP2LGktJYayeTRLePWmEjY2Nvbm7FnbvV2gzJdslvJt0hTDxsbG/nr2esWzspq58sNgY2NjY683oe7vzIuc/J4XlCLY2NjYH89Omkr5mmY7Bl4fNtRLnNjY2NgHsdsGTVswRM368s58JNB+IzY2NvZW7H8BwsRwCFYSTAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户） | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,redis,shiro">
+    <meta name="description" content="应用场景
+我们经常会有用到，当A 用户在北京登录 ，然后A用户在天津再登录 ，要踢出北京登录的状态。如果用户在北京重新登录，那么又要踢出天津的用户，这样反复。又或是需要限制同一用户的同时在线数量，超出限制后，踢出最先登录的或是踢出最后登录的。
+
+第一个场景踢出用户是由用户触发的，有时候需要手动将某个在线用户踢出，也就是对当前在线用户的列表进行管理。
+
+
+······················">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）">
+<meta property="og:url" content="http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="应用场景
+我们经常会有用到，当A 用户在北京登录 ，然后A用户在天津再登录 ，要踢出北京登录的状态。如果用户在北京重新登录，那么又要踢出天津的用户，这样反复。又或是需要限制同一用户的同时在线数量，超出限制后，踢出最先登录的或是踢出最后登录的。
+
+第一个场景踢出用户是由用户触发的，有时候需要手动将某个在线用户踢出，也就是对当前在线用户的列表进行管理。
+
+
+······················">
+<meta property="og:image" content="http://img.blog.csdn.net/20170305165123133?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170305171317582?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-03-05T09:27:36.077Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）">
+<meta name="twitter:description" content="应用场景
+我们经常会有用到，当A 用户在北京登录 ，然后A用户在天津再登录 ，要踢出北京登录的状态。如果用户在北京重新登录，那么又要踢出天津的用户，这样反复。又或是需要限制同一用户的同时在线数量，超出限制后，踢出最先登录的或是踢出最后登录的。
+
+第一个场景踢出用户是由用户触发的，有时候需要手动将某个在线用户踢出，也就是对当前在线用户的列表进行管理。
+
+
+······················">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170305165123133?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-03-05T09:27:14.000Z" itemprop="datePublished" class="page-time">
+  2017-03-05
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#应用场景"><span class="post-toc-number">1.</span> <span class="post-toc-text">应用场景</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#实现思路"><span class="post-toc-number">2.</span> <span class="post-toc-text">实现思路</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年03月05日 17:27" datetime="2017-03-05T09:27:14.000Z"  itemprop="datePublished">2017-03-05</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ol>
+<li><p>我们经常会有用到，当A 用户在北京登录 ，然后A用户在天津再登录 ，要踢出北京登录的状态。如果用户在北京重新登录，那么又要踢出天津的用户，这样反复。又或是需要限制同一用户的同时在线数量，超出限制后，踢出最先登录的或是踢出最后登录的。</p>
+</li>
+<li><p>第一个场景踢出用户是由用户触发的，有时候需要手动将某个在线用户踢出，也就是对当前在线用户的列表进行管理。</p>
+</li>
+</ol>
+<p>·························································································································································<br>个人博客：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></p>
+<p>此项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a><br>························································································································································</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>spring security就直接提供了相应的功能；Shiro的话没有提供默认实现，不过可以很容易的在Shiro中加入这个功能。那就是使用shiro强大的自定义访问控制拦截器：AccessControlFilter，集成这个接口后要实现下面这三个方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">boolean</span> <span class="title">isAccessAllowed</span><span class="params">(ServletRequest request, ServletResponse response, Object mappedValue)</span> <span class="keyword">throws</span> Exception</span>;  </div><div class="line"></div><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">onAccessDenied</span><span class="params">(ServletRequest request, ServletResponse response, Object mappedValue)</span> <span class="keyword">throws</span> Exception</span>; </div><div class="line"> </div><div class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">boolean</span> <span class="title">onAccessDenied</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="keyword">throws</span> Exception</span>;</div></pre></td></tr></table></figure>
+<p>isAccessAllowed：表示是否允许访问；mappedValue就是[urls]配置中拦截器参数部分，如果允许访问返回true，否则false；</p>
+<p>onAccessDenied：表示当访问拒绝时是否已经处理了；如果返回true表示需要继续处理；如果返回false表示该拦截器实例已经处理了，将直接返回即可。</p>
+<p>onPreHandle：会自动调用这两个方法决定是否继续处理；</p>
+<p>另外AccessControlFilter还提供了如下方法用于处理如登录成功后/重定向到上一个请求： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">setLoginUrl</span><span class="params">(String loginUrl)</span> <span class="comment">//身份验证时使用，默认/login.jsp  </span></span></div><div class="line">String <span class="title">getLoginUrl</span><span class="params">()</span>  </div><div class="line">Subject <span class="title">getSubject</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="comment">//获取Subject实例  </span></div><div class="line"><span class="keyword">boolean</span> <span class="title">isLoginRequest</span><span class="params">(ServletRequest request, ServletResponse response)</span><span class="comment">//当前请求是否是登录请求  </span></div><div class="line"><span class="keyword">void</span> <span class="title">saveRequestAndRedirectToLogin</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="keyword">throws</span> IOException <span class="comment">//将当前请求保存起来并重定向到登录页面  </span></div><div class="line"><span class="keyword">void</span> <span class="title">saveRequest</span><span class="params">(ServletRequest request)</span> <span class="comment">//将请求保存起来，如登录成功后再重定向回该请求  </span></div><div class="line"><span class="keyword">void</span> <span class="title">redirectToLogin</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="comment">//重定向到登录页面</span></div></pre></td></tr></table></figure>
+<p>比如基于表单的身份验证就需要使用这些功能。</p>
+<p>到此基本的拦截器就完事了，如果我们想进行访问的控制就可以继承AccessControlFilter；如果我们要添加一些通用数据我们可以直接继承PathMatchingFilter。</p>
+<p>下面就是我实现的访问控制拦截器：KickoutSessionControlFilter：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@author</span> 作者 z77z</div><div class="line"> * <span class="doctag">@date</span> 创建时间：2017年3月5日 下午1:16:38</div><div class="line"> * 思路：</div><div class="line"> * 1.读取当前登录用户名，获取在缓存中的sessionId队列</div><div class="line"> * 2.判断队列的长度，大于最大登录限制的时候，按踢出规则</div><div class="line"> *  将之前的sessionId中的session域中存入kickout：true，并更新队列缓存</div><div class="line"> * 3.判断当前登录的session域中的kickout如果为true，</div><div class="line"> * 想将其做退出登录处理，然后再重定向到踢出登录提示页面</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KickoutSessionControlFilter</span> <span class="keyword">extends</span> <span class="title">AccessControlFilter</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String kickoutUrl; <span class="comment">//踢出后到的地址</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> kickoutAfter = <span class="keyword">false</span>; <span class="comment">//踢出之前登录的/之后登录的用户 默认踢出之前登录的用户</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxSession = <span class="number">1</span>; <span class="comment">//同一个帐号最大会话数 默认1</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> SessionManager sessionManager;</div><div class="line">    <span class="keyword">private</span> Cache&lt;String, Deque&lt;Serializable&gt;&gt; cache;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKickoutUrl</span><span class="params">(String kickoutUrl)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.kickoutUrl = kickoutUrl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKickoutAfter</span><span class="params">(<span class="keyword">boolean</span> kickoutAfter)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.kickoutAfter = kickoutAfter;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMaxSession</span><span class="params">(<span class="keyword">int</span> maxSession)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.maxSession = maxSession;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSessionManager</span><span class="params">(SessionManager sessionManager)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.sessionManager = sessionManager;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//设置Cache的key的前缀</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCacheManager</span><span class="params">(CacheManager cacheManager)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.cache = cacheManager.getCache(<span class="string">"shiro_redis_cache"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isAccessAllowed</span><span class="params">(ServletRequest request, ServletResponse response, Object mappedValue)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">onAccessDenied</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        Subject subject = getSubject(request, response);</div><div class="line">        <span class="keyword">if</span>(!subject.isAuthenticated() &amp;&amp; !subject.isRemembered()) &#123;</div><div class="line">            <span class="comment">//如果没有登录，直接进行之后的流程</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        Session session = subject.getSession();</div><div class="line">        SysUser user = (SysUser) subject.getPrincipal();</div><div class="line">        String username = user.getNickname();</div><div class="line">        Serializable sessionId = session.getId();</div><div class="line"></div><div class="line">        <span class="comment">//读取缓存   没有就存入</span></div><div class="line">        Deque&lt;Serializable&gt; deque = cache.get(username);</div><div class="line">        </div><div class="line">        <span class="comment">//如果队列里没有此sessionId，且用户没有被踢出；放入队列</span></div><div class="line">        <span class="keyword">if</span>(!deque.contains(sessionId) &amp;&amp; session.getAttribute(<span class="string">"kickout"</span>) == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">//将sessionId存入队列</span></div><div class="line">        	deque.push(sessionId);</div><div class="line">        	<span class="comment">//将用户的sessionId队列缓存</span></div><div class="line">            cache.put(username, deque);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//如果队列里的sessionId数超出最大会话数，开始踢人</span></div><div class="line">        <span class="keyword">while</span>(deque.size() &gt; maxSession) &#123;</div><div class="line">            Serializable kickoutSessionId = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">if</span>(kickoutAfter) &#123; <span class="comment">//如果踢出后者</span></div><div class="line">                kickoutSessionId = deque.removeFirst();</div><div class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">//否则踢出前者</span></div><div class="line">                kickoutSessionId = deque.removeLast();</div><div class="line">            &#125;</div><div class="line">            <span class="comment">//踢出后再更新下缓存队列</span></div><div class="line">            cache.put(username, deque);</div><div class="line">            </div><div class="line">            </div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">            	<span class="comment">//获取被踢出的sessionId的session对象</span></div><div class="line">                Session kickoutSession = sessionManager.getSession(<span class="keyword">new</span> DefaultSessionKey(kickoutSessionId));</div><div class="line">                <span class="keyword">if</span>(kickoutSession != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="comment">//设置会话的kickout属性表示踢出了</span></div><div class="line">                    kickoutSession.setAttribute(<span class="string">"kickout"</span>, <span class="keyword">true</span>);</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;<span class="comment">//ignore exception</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//如果被踢出了，直接退出，重定向到踢出后的地址</span></div><div class="line">        <span class="keyword">if</span> ((Boolean)session.getAttribute(<span class="string">"kickout"</span>)!=<span class="keyword">null</span>&amp;&amp;(Boolean)session.getAttribute(<span class="string">"kickout"</span>) == <span class="keyword">true</span>) &#123;</div><div class="line">            <span class="comment">//会话被踢出了</span></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">            	<span class="comment">//退出登录</span></div><div class="line">                subject.logout();</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123; <span class="comment">//ignore</span></div><div class="line">            &#125;</div><div class="line">            saveRequest(request);</div><div class="line">            <span class="comment">//重定向</span></div><div class="line">            WebUtils.issueRedirect(request, response, kickoutUrl);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>将这个自定义的拦截器配置在ShiroConfig.java文件中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * 限制同一账号登录同时登录人数控制</div><div class="line">  * <span class="doctag">@return</span></div><div class="line">  */</div><div class="line"> <span class="function"><span class="keyword">public</span> KickoutSessionControlFilter <span class="title">kickoutSessionControlFilter</span><span class="params">()</span></span>&#123;</div><div class="line"> 	KickoutSessionControlFilter kickoutSessionControlFilter = <span class="keyword">new</span> KickoutSessionControlFilter();</div><div class="line"> 	<span class="comment">//使用cacheManager获取相应的cache来缓存用户登录的会话；用于保存用户—会话之间的关系的；</span></div><div class="line"> 	<span class="comment">//这里我们还是用之前shiro使用的redisManager()实现的cacheManager()缓存管理</span></div><div class="line"> 	<span class="comment">//也可以重新另写一个，重新配置缓存时间之类的自定义缓存属性</span></div><div class="line"> 	kickoutSessionControlFilter.setCacheManager(cacheManager());</div><div class="line"> 	<span class="comment">//用于根据会话ID，获取会话进行踢出操作的；</span></div><div class="line"> 	kickoutSessionControlFilter.setSessionManager(sessionManager());</div><div class="line"> 	<span class="comment">//是否踢出后来登录的，默认是false；即后者登录的用户踢出前者登录的用户；踢出顺序。</span></div><div class="line"> 	kickoutSessionControlFilter.setKickoutAfter(<span class="keyword">false</span>);</div><div class="line"> 	<span class="comment">//同一个用户最大的会话数，默认1；比如2的意思是同一个用户允许最多同时两个人登录；</span></div><div class="line"> 	kickoutSessionControlFilter.setMaxSession(<span class="number">1</span>);</div><div class="line"> 	<span class="comment">//被踢出后重定向到的地址；</span></div><div class="line"> 	kickoutSessionControlFilter.setKickoutUrl(<span class="string">"/kickout"</span>);</div><div class="line">     <span class="keyword">return</span> kickoutSessionControlFilter;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>将这个kickoutSessionControlFilter()注入到shiroFilterFactoryBean中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//自定义拦截器</span></div><div class="line">Map&lt;String, Filter&gt; filtersMap = <span class="keyword">new</span> LinkedHashMap&lt;String, Filter&gt;();</div><div class="line"><span class="comment">//限制同一帐号同时在线的个数。</span></div><div class="line">filtersMap.put(<span class="string">"kickout"</span>, kickoutSessionControlFilter());</div><div class="line">shiroFilterFactoryBean.setFilters(filtersMap);</div></pre></td></tr></table></figure>
+<p>由于我们链接权限的控制是动态存在数据库中的，这个可以去看我之前动态权限控制的博文，所以我们还要在数据库中修改链接的权限，将kickout这个自定义的权限配置在对应的链接上。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170305165123133?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="权限表" title="">
+                </div>
+                <div class="image-caption">权限表</div>
+            </figure>
+<p>还要编写对应的被踢出的跳转页面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=UTF-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"UTF-8"</span>%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">%</span></span></div><div class="line">	<span class="attr">String</span> <span class="attr">path</span> = <span class="string">request.getContextPath();</span></div><div class="line">	<span class="attr">String</span> <span class="attr">basePath</span> = <span class="string">request.getScheme()</span> + "<span class="attr">:</span>//"</div><div class="line">			+ <span class="attr">request.getServerName</span>() + "<span class="attr">:</span>" + <span class="attr">request.getServerPort</span>()</div><div class="line">			+ <span class="attr">path</span>;</div><div class="line">%&gt;</div><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span></span></div><div class="line">	<span class="attr">src</span>=<span class="string">"&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js"</span>&gt;<span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>被踢出<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">被踢出 或则在另一地方登录，或已经达到此账号登录上限被挤掉。</div><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">"login"</span> <span class="attr">value</span>=<span class="string">"重新登录"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="xml"></span></div><div class="line">$("#login").click(function()&#123;</div><div class="line">	window.open("<span class="tag">&lt;<span class="name">%=basePath%</span>&gt;</span>/login"); </div><div class="line">&#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>到此，第一个场景就实现了，写到这里实际第二个场景的实现思路已经就很明显了，可以通过sessionDAO获取到全部的shiro会话List，然后显示在前端页面，踢出对应用户就可以使用在对应sessionId的session域中设置key为kickout的值为true，上面的KickoutSessionControlFilter就会判断session域中的kickout值，做响应的处理。这里我就先不上代码了，大家可以自己试一试。之后再把代码同步到我的码云上，供大家学习交流。</p>
+<p>处理了这个需求后，我发现一个问题，这里有一个前提，我们知道Ajax不能做页面redirect和forward跳转，所以Ajax请求假如没登录，那么这个请求给用户的感觉就是没有任何反应，而用户又不知道用户已经退出了。这个就要对ajax请求做相应的优化，我已经有解决思路了，大家也可以思考下，我也会在下一博提供代码。</p>
+<p>还有我接下来会对之前的前端页面进行完善，比如下面是我更新的登录页面：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170305171317582?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="登录页面" title="">
+                </div>
+                <div class="image-caption">登录页面</div>
+            </figure>
+<p>已经更新到我的码云上面。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-03-05T09:27:36.077Z" itemprop="dateUpdated">2017年3月5日 17:27</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" target="_blank" rel="external">http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/">shiro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&title=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&title=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/03/13/SpringBoot+Shiro学习之密码加密和登录失败次数限制/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot+Shiro学习之密码加密和登录失败次数限制</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）" data-title="SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）" data-url="http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&title=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&title=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）》 — z77z的小码窝&url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD40lEQVR42u3ay24iQQwF0Pz/T2ek2SaQe22DIuX0CjVQXXVYGD8+PuLr8//16PXXK/lkez9599HTjy8cOHDgwBEctV26Pd7Xd5/fSZ7Vrvn8jDhw4MCB45ZjFlyfx6n8KfmBr4gf3seBAwcOHG/keJ4U7ROw54E2CfDJz4kDBw4cOH4PRx5o223lyeHsqDhw4MCB4/0cm9C4OV5b2st3/vJaKQ4cOHDg6E5RBN3f//qt8x04cODA8Yc5PtfXbYnwdaMS0Vlw4MCBA8eaI28pbYp3s6fs42M73IADBw4cOPYc7ZhC8oBZUa899mzc4YcVcODAgQPHmqM9ZJK8tUfdcLdJ4zB648CBAweOmKMNlu1Gc/TkkG2e1f6EOHDgwIHjdRx5JGoDW5I+RSlWHJiLsiYOHDhw4DjlyMcCZo2l2yO10FE6hwMHDhw41hyz8lzeCpqVFJN12oYWDhw4cOB4D8em0NZuJQ+Bq0GEcqzhm+IgDhw4cOA44qibNOXwwVVbq00F878XOHDgwIFjz7FpKc2aTPkTN6slwxY/7B8HDhw4cCw42mbPbcOp/eRsaK8obuLAgQMHjiOOPJSuHhY3pWYHng1e4MCBAweOW47Zlbd8kvSsHXFoc65N+MeBAwcOHJs+y2yYIB9ZyO/nyWE7YFF35HDgwIEDR8zRHmmv3o44zMqXw2/hwIEDB441xyzQzj6zaSC1obctF+LAgQMHjldwzCqI+Tj1Zs28BJmvH30XBw4cOHCUHJsH748645iVEaNEDgcOHDhwHHEcD40FyWFbTGyH6nKsbwItDhw4cOBYcOxD4yzotqPS+ZD37cAEDhw4cOBoOWZjCskBrhKw5E67q4f3ceDAgQPHKcc+cWo/k5cd8ySzTedw4MCBA8d7OHKsPHy2hchN8tamkd+kcDhw4MCBY8GxCXJ5Ue+22Jf8DG04x4EDBw4ce462zbMZaHhFeylvMg27bThw4MCBozxX3l7ajyA8P2rbBkvCZ13ixIEDBw4cRxz5SNmswTMrNc7Wn7WdcODAgQPHLUfe+JmlUrOgmxymTUSjWikOHDhw4FhwXIXMNhXclynrNlK+Hxw4cODAseD4LK99aW/WEMrTv1kj7YeMFgcOHDhwzNcf9vrzlGwWvIvW0cv+KODAgQMHjpwjHw7Ik67NcNtmoOEg0OLAgQMHjiOOPD1LFm2/2xK3Da2DXhwOHDhw4HgZRxJKkxGHZP224dTuYZiP4sCBAweOI46kxJZ/qy0Otq/bnwQHDhw4cNxyzEp7m8RpNjxx1awabhQHDhw4cBxdV+2ifAQhD+EtaLITHDhw4MAx4vgHaarDpk8UvGAAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

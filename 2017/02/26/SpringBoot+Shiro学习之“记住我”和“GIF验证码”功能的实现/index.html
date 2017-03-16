@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,shiro,GIF验证码">
+    <meta name="description" content="学习目标如标题有如下两个功能实现：
+
+记住我的功能：通过设置key为“rememberMe”的cookie保存在客户端来完成记住我的功能，下次用户访问指定页面时就不会重新登录，一直到cookie过期后才会重新登录。
+
+GIF格式验证码：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现">
+<meta property="og:url" content="http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="学习目标如标题有如下两个功能实现：
+
+记住我的功能：通过设置key为“rememberMe”的cookie保存在客户端来完成记住我的功能，下次用户访问指定页面时就不会重新登录，一直到cookie过期后才会重新登录。
+
+GIF格式验证码：">
+<meta property="og:image" content="http://img.blog.csdn.net/20170226175201770?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170226191103113?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-02-26T11:21:07.645Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现">
+<meta name="twitter:description" content="学习目标如标题有如下两个功能实现：
+
+记住我的功能：通过设置key为“rememberMe”的cookie保存在客户端来完成记住我的功能，下次用户访问指定页面时就不会重新登录，一直到cookie过期后才会重新登录。
+
+GIF格式验证码：">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170226175201770?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-02-26T10:43:44.000Z" itemprop="datePublished" class="page-time">
+  2017-02-26
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#学习目标"><span class="post-toc-number">1.</span> <span class="post-toc-text">学习目标</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#记住我"><span class="post-toc-number">2.</span> <span class="post-toc-text">记住我</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#GIF验证码"><span class="post-toc-number">3.</span> <span class="post-toc-text">GIF验证码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结："><span class="post-toc-number">4.</span> <span class="post-toc-text">总结：</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年02月26日 18:43" datetime="2017-02-26T10:43:44.000Z"  itemprop="datePublished">2017-02-26</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><p>如标题有如下两个功能实现：</p>
+<ul>
+<li><p>记住我的功能：通过设置key为“rememberMe”的cookie保存在客户端来完成记住我的功能，下次用户访问指定页面时就不会重新登录，一直到cookie过期后才会重新登录。</p>
+</li>
+<li><p>GIF格式验证码： <figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170226175201770?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>，这个要感谢sojson的博主对这个GIF验证码插件的实现。</p>
+</li>
+</ul>
+<p>个人博客：<a href="http://z77z.oschina.io/">http://z77z.oschina.io/</a></p>
+<p>此项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a></p>
+<h2 id="记住我"><a href="#记住我" class="headerlink" title="记住我"></a>记住我</h2><ul>
+<li>ShiroConfig的配置：</li>
+</ul>
+<p>在ShiroConfig.java中添加如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * cookie对象;</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> SimpleCookie <span class="title">rememberMeCookie</span><span class="params">()</span></span>&#123;</div><div class="line">   <span class="comment">//这个参数是cookie的名称，对应前端的checkbox的name = rememberMe</span></div><div class="line">   SimpleCookie simpleCookie = <span class="keyword">new</span> SimpleCookie(<span class="string">"rememberMe"</span>);</div><div class="line">   <span class="comment">//&lt;!-- 记住我cookie生效时间30天 ,单位秒;--&gt;</span></div><div class="line">   simpleCookie.setMaxAge(<span class="number">2592000</span>);</div><div class="line">   <span class="keyword">return</span> simpleCookie;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * cookie管理对象;记住我功能</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> CookieRememberMeManager <span class="title">rememberMeManager</span><span class="params">()</span></span>&#123;</div><div class="line">   CookieRememberMeManager cookieRememberMeManager = <span class="keyword">new</span> CookieRememberMeManager();</div><div class="line">   cookieRememberMeManager.setCookie(rememberMeCookie());</div><div class="line">   <span class="comment">//rememberMe cookie加密的密钥 建议每个项目都不一样 默认AES算法 密钥长度(128 256 512 位)</span></div><div class="line">   cookieRememberMeManager.setCipherKey(Base64.decode(<span class="string">"3AvVhmFLUs0KTA3Kprsdag=="</span>));</div><div class="line">   <span class="keyword">return</span> cookieRememberMeManager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>rememberMeCookie()方法是设置Cookie的生成模版，比如cookie的name，cookie的有效时间等等。<br>rememberMeManager()方法是生成rememberMe管理器，而且要将这个rememberMe管理器设置到securityManager中，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span> </span>&#123;</div><div class="line">	DefaultWebSecurityManager securityManager = <span class="keyword">new</span> DefaultWebSecurityManager();</div><div class="line">	<span class="comment">// 设置realm.</span></div><div class="line">	securityManager.setRealm(myShiroRealm());</div><div class="line">	<span class="comment">// 自定义缓存实现 使用redis</span></div><div class="line">	securityManager.setCacheManager(cacheManager());</div><div class="line">	<span class="comment">// 自定义session管理 使用redis</span></div><div class="line">	securityManager.setSessionManager(SessionManager());</div><div class="line">	<span class="comment">//注入记住我管理器;</span></div><div class="line">    securityManager.setRememberMeManager(rememberMeManager());</div><div class="line">	<span class="keyword">return</span> securityManager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实上面的步骤，也就是rememberMe管理器可以不用配置，shiro会使用默认的配置，之所以要配置的目的是为了能够在实际业务环境中自定义其中的参数。</p>
+<ul>
+<li>登录controller的改造</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"ajaxLogin"</span>,method=RequestMethod.POST)</div><div class="line"><span class="meta">@ResponseBody</span></div><div class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">submitLogin</span><span class="params">(String username, String password,Boolean rememberMe,Model model)</span> </span>&#123;</div><div class="line">	Map&lt;String, Object&gt; resultMap = <span class="keyword">new</span> LinkedHashMap&lt;String, Object&gt;();</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken(username, password,rememberMe);</div><div class="line">		SecurityUtils.getSubject().login(token);</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">200</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, <span class="string">"登录成功"</span>);</div><div class="line"></div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">500</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, e.getMessage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> resultMap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>之前我是将shiro已经实现的UsernamePasswordToken类再封装了一层，最后发现没有必要，直接使用shiro提供的UsernamePasswordToken的类，其中有一个构造函数需要传rememberMe这个参数，也就是shiro为我们已经实现好了，推荐大家去看下UsernamePasswordToken这个类的源码。</p>
+<ul>
+<li>jsp页面的改造</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">language</span>=<span class="string">"java"</span> <span class="attr">contentType</span>=<span class="string">"text/html; charset=utf-8"</span></span></div><div class="line">	<span class="attr">pageEncoding</span>=<span class="string">"utf-8"</span>%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">%</span></span></div><div class="line">	<span class="attr">String</span> <span class="attr">path</span> = <span class="string">request.getContextPath();</span></div><div class="line">	<span class="attr">String</span> <span class="attr">basePath</span> = <span class="string">request.getScheme()</span> + "<span class="attr">:</span>//"</div><div class="line">			+ <span class="attr">request.getServerName</span>() + "<span class="attr">:</span>" + <span class="attr">request.getServerPort</span>()</div><div class="line">			+ <span class="attr">path</span>;</div><div class="line">%&gt;</div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=utf-8"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span></span></div><div class="line">	<span class="attr">src</span>=<span class="string">"&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js"</span>&gt;<span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>登录<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	错误信息：</div><div class="line">	<span class="tag">&lt;<span class="name">h4</span> <span class="attr">id</span>=<span class="string">"erro"</span>&gt;</span><span class="tag">&lt;/<span class="name">h4</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">form</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			账号：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"username"</span> <span class="attr">id</span>=<span class="string">"username"</span> <span class="attr">value</span>=<span class="string">"admin"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			密码：<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">id</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"123"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span>		</div><div class="line">		<span class="tag">&lt;<span class="name">P</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">name</span>=<span class="string">"rememberMe"</span>  <span class="attr">id</span>=<span class="string">"rememberMe"</span> /&gt;</span>记住我<span class="tag">&lt;/<span class="name">P</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">"ajaxLogin"</span> <span class="attr">value</span>=<span class="string">"登录"</span> /&gt;</span></div><div class="line">		<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">		</div><div class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line">$(function()&#123;</div><div class="line">	$("#ajaxLogin").click(function() &#123;</div><div class="line">		var username = $("#username").val();</div><div class="line">		var password = $("#password").val();</div><div class="line">		var rememberMe =$('#rememberMe').is(':checked');</div><div class="line">		$.post("/ajaxLogin", &#123;</div><div class="line">			"username" : username,</div><div class="line">			"password" : password,</div><div class="line">			"rememberMe" : rememberMe</div><div class="line">		&#125;, function(result) &#123;</div><div class="line">			if (result.status == 200) &#123;</div><div class="line">				location.href = "/index";</div><div class="line">			&#125; else &#123;</div><div class="line">				$("#erro").html(result.message);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	&#125;);</div><div class="line">&#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>添加一个记住我的单选框，来控制是否需要记住我。</p>
+<ul>
+<li>修改权限配置，修改sys_permission_init表</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170226191103113?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="链接权限控制表" title="">
+                </div>
+                <div class="image-caption">链接权限控制表</div>
+            </figure>
+<p>因为getGifCode是获取验证码的链接，所以要配置为anon，不需要权限验证。user权限是配置记住我或认证通过可以访问，所以将/**链接设置为user权限，就可以实现记住我的功能。</p>
+<p>注意权限添加的排序。</p>
+<h2 id="GIF验证码"><a href="#GIF验证码" class="headerlink" title="GIF验证码"></a>GIF验证码</h2><ul>
+<li>编写一个获取GIF验证码图片的controller：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取验证码（Gif版本）</div><div class="line"> * <span class="doctag">@param</span> response</div><div class="line"> */</div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"getGifCode"</span>,method=RequestMethod.GET)</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getGifCode</span><span class="params">(HttpServletResponse response,HttpServletRequest request)</span></span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		response.setHeader(<span class="string">"Pragma"</span>, <span class="string">"No-cache"</span>);  </div><div class="line">        response.setHeader(<span class="string">"Cache-Control"</span>, <span class="string">"no-cache"</span>);  </div><div class="line">        response.setDateHeader(<span class="string">"Expires"</span>, <span class="number">0</span>);  </div><div class="line">        response.setContentType(<span class="string">"image/gif"</span>);  </div><div class="line">        <span class="comment">/**</span></div><div class="line">         * gif格式动画验证码</div><div class="line">         * 宽，高，位数。</div><div class="line">         */</div><div class="line">        Captcha captcha = <span class="keyword">new</span> GifCaptcha(<span class="number">146</span>,<span class="number">33</span>,<span class="number">4</span>);</div><div class="line">        <span class="comment">//输出</span></div><div class="line">        captcha.out(response.getOutputStream());</div><div class="line">        HttpSession session = request.getSession(<span class="keyword">true</span>);  </div><div class="line">        <span class="comment">//存入Session</span></div><div class="line">        session.setAttribute(<span class="string">"_code"</span>,captcha.text().toLowerCase());  </div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		System.err.println(<span class="string">"获取验证码异常："</span>+e.getMessage());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>生成验证码后，将图片返回到页面，将字符串保存在当前会话的session域中。</p>
+<p>这个GIF验证码的生成插件源码在我的项目io.z77z.vcode这个包下面，大家需要的话可以在我的码云上去下载。</p>
+<ul>
+<li>改造登录controller：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * ajax登录请求</div><div class="line"> * <span class="doctag">@param</span> username</div><div class="line"> * <span class="doctag">@param</span> password</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="meta">@RequestMapping</span>(value=<span class="string">"ajaxLogin"</span>,method=RequestMethod.POST)</div><div class="line"><span class="meta">@ResponseBody</span></div><div class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">submitLogin</span><span class="params">(String username, String password,String vcode,Boolean rememberMe,Model model)</span> </span>&#123;</div><div class="line">	Map&lt;String, Object&gt; resultMap = <span class="keyword">new</span> LinkedHashMap&lt;String, Object&gt;();</div><div class="line">	</div><div class="line">	<span class="keyword">if</span>(vcode==<span class="keyword">null</span>||vcode==<span class="string">""</span>)&#123;</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">500</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, <span class="string">"验证码不能为空！"</span>);</div><div class="line">		<span class="keyword">return</span> resultMap;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	Session session = SecurityUtils.getSubject().getSession();</div><div class="line">	<span class="comment">//转化成小写字母</span></div><div class="line">	vcode = vcode.toLowerCase();</div><div class="line">	String v = (String) session.getAttribute(<span class="string">"_code"</span>);</div><div class="line">	<span class="comment">//还可以读取一次后把验证码清空，这样每次登录都必须获取验证码</span></div><div class="line">	<span class="comment">//session.removeAttribute("_come");</span></div><div class="line">   	<span class="keyword">if</span>(!vcode.equals(v))&#123;</div><div class="line">   		resultMap.put(<span class="string">"status"</span>, <span class="number">500</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, <span class="string">"验证码错误！"</span>);</div><div class="line">		<span class="keyword">return</span> resultMap;</div><div class="line">   	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken(username, password,rememberMe);</div><div class="line">		SecurityUtils.getSubject().login(token);</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">200</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, <span class="string">"登录成功"</span>);</div><div class="line"></div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		resultMap.put(<span class="string">"status"</span>, <span class="number">500</span>);</div><div class="line">		resultMap.put(<span class="string">"message"</span>, e.getMessage());</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> resultMap;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>登录的时候判断前台传入的验证码和session中的是否一致。</p>
+<ul>
+<li>前端jsp页面改造</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=utf-8&quot;</div><div class="line">	pageEncoding=&quot;utf-8&quot;%&gt;</div><div class="line">&lt;%</div><div class="line">	String path = request.getContextPath();</div><div class="line">	String basePath = request.getScheme() + &quot;://&quot;</div><div class="line">			+ request.getServerName() + &quot;:&quot; + request.getServerPort()</div><div class="line">			+ path;</div><div class="line">%&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;</div><div class="line">	src=&quot;&lt;%=basePath%&gt;/static/js/jquery-1.11.3.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;title&gt;登录&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">	错误信息：</div><div class="line">	&lt;h4 id=&quot;erro&quot;&gt;&lt;/h4&gt;</div><div class="line">	&lt;form&gt;</div><div class="line">		&lt;p&gt;</div><div class="line">			账号：&lt;input type=&quot;text&quot; name=&quot;username&quot; id=&quot;username&quot; value=&quot;admin&quot; /&gt;</div><div class="line">		&lt;/p&gt;</div><div class="line">		&lt;p&gt;</div><div class="line">			密码：&lt;input type=&quot;text&quot; name=&quot;password&quot; id=&quot;password&quot; value=&quot;123&quot; /&gt;</div><div class="line">		&lt;/p&gt;</div><div class="line">		&lt;p&gt;</div><div class="line">			验证码：&lt;input type=&quot;text&quot; name=&quot;vcode&quot; id=&quot;vcode&quot;/&gt;</div><div class="line">		&lt;/p&gt;</div><div class="line">		&lt;p&gt;</div><div class="line">			&lt;img alt=&quot;验证码&quot; src=&quot;/getGifCode&quot;&gt;</div><div class="line">		&lt;/p&gt;</div><div class="line">		</div><div class="line">		&lt;P&gt;&lt;input type=&quot;checkbox&quot; name=&quot;rememberMe&quot;  id=&quot;rememberMe&quot; /&gt;记住我&lt;/P&gt;</div><div class="line">		&lt;p&gt;</div><div class="line">			&lt;input type=&quot;button&quot; id=&quot;ajaxLogin&quot; value=&quot;登录&quot; /&gt;</div><div class="line">		&lt;/p&gt;</div><div class="line">		</div><div class="line">	&lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;script&gt;</div><div class="line">$(function()&#123;</div><div class="line">	$(&quot;#ajaxLogin&quot;).click(function() &#123;</div><div class="line">		var username = $(&quot;#username&quot;).val();</div><div class="line">		var password = $(&quot;#password&quot;).val();</div><div class="line">		var vcode = $(&quot;#vcode&quot;).val();</div><div class="line">		var rememberMe =$(&apos;#rememberMe&apos;).is(&apos;:checked&apos;);</div><div class="line">		$.post(&quot;/ajaxLogin&quot;, &#123;</div><div class="line">			&quot;username&quot; : username,</div><div class="line">			&quot;password&quot; : password,</div><div class="line">			&quot;vcode&quot; : vcode,</div><div class="line">			&quot;rememberMe&quot; : rememberMe</div><div class="line">		&#125;, function(result) &#123;</div><div class="line">			if (result.status == 200) &#123;</div><div class="line">				location.href = &quot;/index&quot;;</div><div class="line">			&#125; else &#123;</div><div class="line">				$(&quot;#erro&quot;).html(result.message);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	&#125;);</div><div class="line">&#125;);</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>到此，我们集成shiro和redis，学习了一下功能的实现：</p>
+<ol>
+<li>用户必须要登陆之后才能访问定义链接，否则跳转到登录页面，被禁用户不能登录。并且对一些敏感操作链接设置权限，只有满足权限的才可以访问。</li>
+<li>每个链接的权限信息保存在数据库，可以动态进行设置，并且热加载权限。</li>
+<li>使用redis对shiro的用户信息进行缓存，不用每次都去执行MyShiroRealm.doGetAuthorizationInfo()权限认证方法。</li>
+<li>之前有很多同学下载我的项目时，运行会报错，那是因为最近都在不断修改提交，有可能会出现版本问题，现在我在我的码云上面创建了stable_version分支，都是可以跑起来的。sqltable放在resource目录下面。</li>
+<li>“记住我”的功能，利用cookie。</li>
+<li>GIF验证码的生成，在登陆时进行验证码的校验。利用session。</li>
+<li>下一博，我应该会写对在线用户的管理，踢出登录的功能学习记录。</li>
+</ol>
+<p>香蕉硬币点赞走一波啦。。。。。。</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-02-26T11:21:07.645Z" itemprop="dateUpdated">2017年2月26日 19:21</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" target="_blank" rel="external">http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GIF验证码/">GIF验证码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/">shiro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&title=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&title=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/03/05/SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot+Shiro学习之自定义拦截器管理在线用户（踢出用户）</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/02/17/SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SpringBoot+Shiro学习之数据库动态权限管理和Redis缓存</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现" data-title="SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现" data-url="http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&title=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&title=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现》 — z77z的小码窝&url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/02/26/SpringBoot+Shiro学习之“记住我”和“GIF验证码”功能的实现/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD8UlEQVR42u3aS3KjQBAFQN3/0p6I2WpA71U1Gi+SlQMjukkWRX1er/j4+Xtsrv95O67O3//3/fz9mdcTBw4cOHDgCLaebOt+i1dXXq11dSbZ4f0LyNH/cTccOHDgwHGII1ng/gHy7SYvI39hm6CLAwcOHDj+L8c+yLVpWx7m25CPAwcOHDh+A0e+8CxVS5K9TVKHAwcOHDi+yTFr/yRAe7jksdv9H6iV4sCBAweOLtLVQfc3//3gfAcOHDhw4Bi1c/JBh7OB9lQaGT0RDhw4cOBYc8zKdskYXN4cmsXBdpCi2AMOHDhw4Fhz5A95arFZOyopTZ4qbuLAgQMHjhlHMi4wq57l7ah9eM5fVTHZgQMHDhw4DnFsCoL5RmevJB9EmF2JAwcOHDjOcuSJWR7AZs2nljgPzB9eMA4cOHDgOMSRJF15SW6WquX1y/x8/Tpx4MCBA8eaI0mWNuGwDcmnEGejDzhw4MCB4wmOU22kU9ynPgLyVXDgwIEDx56jDVSzMYJZUW8WXPN2Vx10ceDAgQNHzHE2fWq58zNtO2pWasSBAwcOHKc48kC1+dV+WCEZucibVR86cjhw4MCBY8SRB9d92ym/W/6QZz8IcODAgQPHWY5ZWe2Jst2syLgJ7Thw4MCBY8ORJEJt2a69Mr9m9nryO+DAgQMHjj1HnjK1Ywd5q6ltKe0H5obfHThw4MCBI+Boy235dmdjcJuS32YnOHDgwIHjFMemuJZvejYkkQ8i7IuPH0qEOHDgwIEj5piVAtvzRZA7lLAlO7msleLAgQMHjgVHG7TysNcmge1IxKZ9VXx34MCBAweOkiMPTu3AQfur2TjCfmDi8rsDBw4cOHAsODZJ0aaEl7Duh96KcQccOHDgwPEVjvaaWTJWB8VyGiFKLHHgwIEDx5ojH5tLErzNyML+sWcDGZc7x4EDBw4cD3Dk52fXbIL0I/03HDhw4MBxaJQhT4TuHzJPvdoAmTfD8gB8WRzEgQMHDhyPccwWnrWa8nZRslZS3BymbThw4MCBI+DYt45mgXaW1OWpWpsE4sCBAweOUxxtYybZ0NnWURv4Z0EaBw4cOHDsOWbjZZtttUMPeflyNtBwYNoOBw4cOHDEJbZoDqIMY22RMQ/Y9TDc+x1w4MCBA8eaYxOW8mVODUC0L2m2Fg4cOHDg2HO0qdcsNG4GGtp0Lg+0H4qDOHDgwIFjwZEHqrY1NTuSBG/2BfGBCQcOHDhwfJ0jD7Fts6ptOOWFyyIJxIEDBw4cX+TIS4TJPTflvHy3dTsNBw4cOHAc4kiKg5sr2422ZDnKax+TceDAgQPH+sibOrPGVVuC3IC2Yxk4cODAgSPm+APsFe3QdnJHtAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

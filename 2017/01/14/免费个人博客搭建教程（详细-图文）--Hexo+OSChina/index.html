@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>免费个人博客搭建教程（详细-图文）--Hexo+OSChina | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="博客,Hexo,码云">
+    <meta name="description" content="本人作为一个屌丝程序员，年少无为，卖马为生，买不起服务器，买不起域名，但是又想拥有属于自己的博客网站，那就只有通过技术来实现这一切了。先上成果：点击，现在我把我自己搭建博客的过程共享出来，只要你按照步骤一步步走下去，一定会搭建成功，如果大家在搭建过程中遇到什么问题，欢迎在我的博客评论区留言，也欢迎大神进来，教我做码，带我装逼，带我飞。博客地址，JUST DO IT(离开舒适区)。
+
+
+使用工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="免费个人博客搭建教程（详细-图文）--Hexo+OSChina">
+<meta property="og:url" content="http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="本人作为一个屌丝程序员，年少无为，卖马为生，买不起服务器，买不起域名，但是又想拥有属于自己的博客网站，那就只有通过技术来实现这一切了。先上成果：点击，现在我把我自己搭建博客的过程共享出来，只要你按照步骤一步步走下去，一定会搭建成功，如果大家在搭建过程中遇到什么问题，欢迎在我的博客评论区留言，也欢迎大神进来，教我做码，带我装逼，带我飞。博客地址，JUST DO IT(离开舒适区)。
+
+
+使用工具">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114130729127?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114140920538?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114143254775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114143625904?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114144033857?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114144752014?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114145129378?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114145727287?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114153926853?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114160734101?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114160903554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114163000889?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114163013874?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114164018356?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114164154882?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-01-14T14:09:26.591Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="免费个人博客搭建教程（详细-图文）--Hexo+OSChina">
+<meta name="twitter:description" content="本人作为一个屌丝程序员，年少无为，卖马为生，买不起服务器，买不起域名，但是又想拥有属于自己的博客网站，那就只有通过技术来实现这一切了。先上成果：点击，现在我把我自己搭建博客的过程共享出来，只要你按照步骤一步步走下去，一定会搭建成功，如果大家在搭建过程中遇到什么问题，欢迎在我的博客评论区留言，也欢迎大神进来，教我做码，带我装逼，带我飞。博客地址，JUST DO IT(离开舒适区)。
+
+
+使用工具">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170114130729127?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">免费个人博客搭建教程（详细-图文）--Hexo+OSChina</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">免费个人博客搭建教程（详细-图文）--Hexo+OSChina</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-01-14T09:49:58.000Z" itemprop="datePublished" class="page-time">
+  2017-01-14
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用工具介绍"><span class="post-toc-number">1.</span> <span class="post-toc-text">使用工具介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#搭建环境"><span class="post-toc-number">2.</span> <span class="post-toc-text">搭建环境</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本地运行Hexo"><span class="post-toc-number">3.</span> <span class="post-toc-text">本地运行Hexo</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#修改Hexo的主题"><span class="post-toc-number">4.</span> <span class="post-toc-text">修改Hexo的主题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写博客文章"><span class="post-toc-number">5.</span> <span class="post-toc-text">编写博客文章</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#生成静态Html文件"><span class="post-toc-number">6.</span> <span class="post-toc-text">生成静态Html文件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#发布静态Html文件到码云-Pages上"><span class="post-toc-number">7.</span> <span class="post-toc-text">发布静态Html文件到码云 Pages上</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-免费个人博客搭建教程（详细-图文）--Hexo+OSChina"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">免费个人博客搭建教程（详细-图文）--Hexo+OSChina</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年01月14日 17:49" datetime="2017-01-14T09:49:58.000Z"  itemprop="datePublished">2017-01-14</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p> 本人作为一个屌丝程序员，<strong>年少无为，卖马为生</strong>，买不起服务器，买不起域名，但是又想拥有属于自己的博客网站，那就只有通过技术来实现这一切了。先上成果：<a href="http://z77z.oschina.io/">点击</a>，现在我把我自己搭建博客的过程共享出来，只要你按照步骤一步步走下去，一定会搭建成功，如果大家在搭建过程中遇到什么问题，欢迎在我的博客评论区留言，也欢迎大神进来，教我做码，带我装逼，带我飞。<strong><a href="http://z77z.oschina.io/">博客地址</a></strong>，JUST DO IT(<code>离开舒适区</code>)。</p>
+</blockquote>
+<hr>
+<h2 id="使用工具介绍"><a href="#使用工具介绍" class="headerlink" title="使用工具介绍"></a>使用工具介绍</h2><ol>
+<li><p><code>码云 Pages</code>：码云 Pages 是一个免费的静态网页托管服务，您可以使用码云 Pages 托管博客、项目官网等静态网页。<strong>这样就不用购买服务器和域名了</strong>，如果您使用过 <code>Github Pages</code> 那么您会很快上手使用码云的Pages服务。这里使用码云上的Pages 而不是用<code>Github Pages</code>，主要原因就是在国内没有VPN的话。。。你懂得！还有就是支持国产！链接：<a href="https://git.oschina.net/" target="_blank" rel="external">https://git.oschina.net/</a></p>
+</li>
+<li><p><code>Hexo</code>：Hexo是一个快速、简洁且高效的博客框架。Hexo使用 <code>Markdown</code>（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。使用者只需要专注于写博客而不需要关注网站是如何生成的。而且还有丰富的博客主题可以选择！链接：<a href="https://hexo.io/zh-cn/" target="_blank" rel="external">https://hexo.io/zh-cn/</a>（ps：这是国外网站，翻墙吧少年，需要<code>自由门</code> 翻墙软件可以在博客中联系我哦）</p>
+</li>
+</ol>
+<h2 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h2><p> <strong>Node.js安装。</strong></p>
+<blockquote>
+<p>参考：<a href="http://www.runoob.com/nodejs/nodejs-install-setup.html" target="_blank" rel="external">http://www.runoob.com/nodejs/nodejs-install-setup.html</a>（ps：如果没有VPN的用户最好切换一下npm的源，不然后续的步骤可能会让你想砸电脑，安装完后，在命令窗口执行下面代码）</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm config set registry http://registry.cnpmjs.org     #切换npm为淘宝镜像</div></pre></td></tr></table></figure>
+<p> <strong>Git安装。</strong></p>
+<blockquote>
+<p>参考<a href="http://www.runoob.com/git/git-install-setup.html" target="_blank" rel="external">http://www.runoob.com/git/git-install-setup.html</a></p>
+</blockquote>
+<p><strong>Hexo安装。</strong>（ ps：安装完Node.js和Git之后不需要配置些什么，只需要安装成功就是了，如果想明白原理的话可以深入的学习。）</p>
+<p> 如果您的电脑中已经安装上述必备程序，那么恭喜您！接下来只需要使用 npm 即可完成 Hexo 的安装。打开命令窗口输入下面代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>安装成功后输入<code>hexo</code> 如果得到下面这个结果，恭喜你！安装成功！</p>
+<p><img src="http://img.blog.csdn.net/20170114130729127?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="Hexo安装成功后效果"></p>
+<p>Hexo的常用命令说明：</p>
+<blockquote>
+<p>参考：<a href="https://hexo.io/zh-cn/docs/commands.html" target="_blank" rel="external">https://hexo.io/zh-cn/docs/commands.html</a></p>
+</blockquote>
+<h2 id="本地运行Hexo"><a href="#本地运行Hexo" class="headerlink" title="本地运行Hexo"></a>本地运行Hexo</h2><p>安装 Hexo 完成后，请依次执行下列命令，Hexo 将会在指定文件夹中新建所需要的文件。将<code>&lt;folder&gt;</code> 替换成项目存放的文件夹目录，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">hexo init &lt;folder&gt;</div><div class="line">cd &lt;folder&gt;</div><div class="line">npm install</div><div class="line">hexo generate</div></pre></td></tr></table></figure></p>
+<p>新建完成后，指定文件夹的目录如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">.</div><div class="line">├── .deploy       #需要部署的文件</div><div class="line">├── node_modules  #Hexo插件</div><div class="line">├── public        #生成的静态网页文件</div><div class="line">├── scaffolds     #模板</div><div class="line">├── source        #博客正文和其他源文件, 404 favicon CNAME 等都应该放在这里</div><div class="line">|   ├── _drafts   #草稿</div><div class="line">|   └── _posts    #文章</div><div class="line">├── themes        #主题</div><div class="line">├── _config.yml   #全局配置文件</div><div class="line">└── package.json</div></pre></td></tr></table></figure>
+<p> 进行到这步后就可以先在本地运行下，看看效果了。执行下面命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd &lt;folder&gt;         #切换到项目目录下</div><div class="line">npm install   		#install before start blogging</div><div class="line">hexo server         #运行本地服务</div></pre></td></tr></table></figure>
+<p>浏览器输入<a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a>就可以看到效果。如下：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114140920538?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="默认配置运行效果" title="">
+                </div>
+                <div class="image-caption">默认配置运行效果</div>
+            </figure>
+<h2 id="修改Hexo的主题"><a href="#修改Hexo的主题" class="headerlink" title="修改Hexo的主题"></a>修改Hexo的主题</h2><p>当然，上面运行的只是Hexo官方默认的主题配置效果，想要个性一点？，下面我们就将他改造成自己想要的个性主题。</p>
+<p>Hexo的主题都是一些前端民间高手写的模版，可以在官方收录的主题中去挑选：<a href="https://hexo.io/themes/" target="_blank" rel="external">https://hexo.io/themes/</a></p>
+<p>看上一个主题后点击下图位置，进入下载主题文件。如下图：</p>
+<p><img src="http://img.blog.csdn.net/20170114143254775?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114143625904?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>主题下载完成后，将主题文件解压到Hexo项目的thems文件夹下面（ps:我这里的项目目录是在桌面的Hexo文件夹里面。）</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114144033857?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>接下来就是修改Hexo的配置文件<code>_config.yml</code>，将里面<code>theme</code> 对应的值改为之前下载的主题的文件夹名字，本文里面下载的主题文件夹名字为<code>hexo-theme-smackdown-master</code>。</p>
+<p>修改前</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114144752014?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="修改前" title="">
+                </div>
+                <div class="image-caption">修改前</div>
+            </figure>
+<p>修改后</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114145129378?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="修改后" title="">
+                </div>
+                <div class="image-caption">修改后</div>
+            </figure>
+<p><em>注意：这里“：”后面必须要有一个空格，而且这个空格要在英文输入法下，不然会报一些稀奇古怪的错。</em></p>
+<p>按照之前步骤本地重新运行后，如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114145727287?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="改变主题后效果" title="">
+                </div>
+                <div class="image-caption">改变主题后效果</div>
+            </figure>
+<p>关于Hexo中<code>_config.yml</code> 文件的其他配置，大家可以参考官方的文档，这里就不多赘述了：</p>
+<blockquote>
+<p>文档链接 <a href="https://hexo.io/zh-cn/docs/configuration.html" target="_blank" rel="external">https://hexo.io/zh-cn/docs/configuration.html</a></p>
+</blockquote>
+<p>下载的每个主题中，有一个配置文件，名字也叫<code>_config.yml</code>，这里大家千万不要和之前Hexo根目录下的<code>_config.yml</code>搞混淆了，这里面配置的主要是些与主题相关的东西，比如一些文章阅读量，多说插件，cnzz站长工具等等的配置信息。一般里面也都有注释，这里就不赘述了，不懂得可以在我的博客问我。</p>
+<p>一些主题在GitHub上面也都有主题安装的一些文档，写的都很详细。推荐一个主题的文档，结合官方的文档看完之后，基本上也就明白了。</p>
+<blockquote>
+<p>推荐一个主题的文档<a href="https://github.com/yscoder/hexo-theme-indigo/wiki" target="_blank" rel="external">https://github.com/yscoder/hexo-theme-indigo/wiki</a></p>
+</blockquote>
+<h2 id="编写博客文章"><a href="#编写博客文章" class="headerlink" title="编写博客文章"></a>编写博客文章</h2><p>如果你使用过<code>MarkDown</code> 来写博客文章的话，接下来就简单多了，没使用过也没关系，推荐大家一个编辑工具<code>马克飞象</code> 链接：<a href="https://maxiang.io/" target="_blank" rel="external">https://maxiang.io/</a>，在编辑器里面写好文章后，复制或另存为.md文件, 与普通的.md文件不同   要在文件开头添加下面代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">title: #文章标题</div><div class="line">date: #文章日期</div><div class="line">tags: #文章标签</div><div class="line">categories: #文章分类</div><div class="line">---</div></pre></td></tr></table></figure>
+<p>在.md文件的开头添加上面代码，是为了让Hexo框架在生成网页的时候，设置相应的参数。例如下图所示：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114153926853?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>将写好的.md文件放入Hexo项目的<code>source</code> 目录下的<code>_posts</code> 文件夹中，可以看到里面有个<code>hello-world.md</code> 文件，这就是默认的文章。</p>
+<p>重新在本地启动项目，访问就可以看到之前添加的文章。</p>
+<h2 id="生成静态Html文件"><a href="#生成静态Html文件" class="headerlink" title="生成静态Html文件"></a>生成静态Html文件</h2><p>现在只能在本地启动项目然后通过本地地址访问博客网站，下面我们就可以利用Hexo生成静态Html，很简单，只需要在命令窗口执行下面代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd &lt;folder&gt;         #切换到项目目录下</div><div class="line">hexo generate       #生成静态文件到项目根目录的public文件夹中</div></pre></td></tr></table></figure>
+<h2 id="发布静态Html文件到码云-Pages上"><a href="#发布静态Html文件到码云-Pages上" class="headerlink" title="发布静态Html文件到码云 Pages上"></a>发布静态Html文件到码云 Pages上</h2><p>注册一个码云帐号，并创建一个项目。如下图：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114160734101?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>创建完项目后得到项目的Https的地址后面要用。地址获取如下图</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114160903554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>这里使用git将项目中<code>public</code> 文件夹下的文件管理起来，并推送到码云上。</p>
+<p>这里借用一个插件来帮助我们完成，安装 hexo-deployer-git。安装代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>配置项目根目录<code>_config.yml</code> 文件，修改<code>deploy</code> 的值，如下图：</p>
+<p>修改前</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114163000889?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="修改前" title="">
+                </div>
+                <div class="image-caption">修改前</div>
+            </figure>
+<p>修改后，注意<code>repo</code> 的地址是之前在码云上面创建醒目后获取的地址。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114163013874?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="修改后" title="">
+                </div>
+                <div class="image-caption">修改后</div>
+            </figure>
+<p>修改完后在命令窗口执行下面命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd &lt;folder&gt;         #切换到项目目录下</div><div class="line">hexo deploy         #一键部署功能</div></pre></td></tr></table></figure>
+<p><strong>之后会弹出一个对话框，输入码云的帐号密码。</strong></p>
+<p>部署成功之后，登录码云，查看之前创建的项目中出现了<code>public</code> 文件夹中的文件，这时候代表之前的部署是成功的。</p>
+<p>然后如下图，启动码云的pages功能：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114164018356?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>访问链接：</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170114164154882?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<p>这时候就看到之前和本地启动一样的效果了。博客部署完成，在这之后，只需要每次用马克飞象写好文章后，放入Hexo项目的<code>source</code> 目录下的<code>_posts</code> 文件夹中，在按照之前步骤更新博客就OK了。还可以随时切换博客的主题哦！</p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-01-14T14:09:26.591Z" itemprop="dateUpdated">2017年1月14日 22:09</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" target="_blank" rel="external">http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/码云/">码云</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&title=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&title=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/01/05/通讯录之按汉字首字母排序-java/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">通讯录之按汉字首字母排序-java</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="免费个人博客搭建教程（详细-图文）--Hexo+OSChina" data-title="免费个人博客搭建教程（详细-图文）--Hexo+OSChina" data-url="http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&title=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&title=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《免费个人博客搭建教程（详细-图文）--Hexo+OSChina》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/14/免费个人博客搭建教程（详细-图文）--Hexo+OSChina/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADLklEQVR42u3awU4jQQwEUP7/p7OXPewKJVTZg8g0b04oJJ1+jYRlV398xM/jn+fz6+2nPv/22cqb9S94sLGxsW/Cfrx8Xm/xET/5ISY7eXb0+R6wsbGxz2M/+w/fvic5rByfr5PvExsbGxv79baSreSby0sdNjY2NnZbwDaFJ1k5+RQ2NjY29maUk8cDyZR+E0h8+ywNGxsb++3ZeSr6/j9/S76NjY2N/cbsR/kkjUf7nna0tAmb/34KGxsb+yB2u5Wk8Zhdr5k1Kqv9Y2NjYx/Hzoc7bRzbDveT37YDqS9madjY2Ng3ZychaxsGXBUDz2KMOhjAxsbGvi17v0Q7isrLTF4U27KHjY2NfRI7KS2zizWbT20OPRlmYWNjY5/EnhWnpMDk12tmBzc7SmxsbOzz2HmYuh8/JQUyX/OCw8LGxsY+iH3V+H729W0Y3IbTdcqNjY2NfUP2bCi/OuOyaZldCfriz4CNjY19KHsW4s5akXyL15ZMbGxs7JPYs+uVs5KT89qrP3WRw8bGxj6UnV/c+amrPI/4WfVe2NjY2Ddnz1LRTeuyCXfzqPi/V7CxsbGPY7cfvmrQMytUF4yfsLGxsY9j5+OkZHPJysmoqI0iih1iY2Nj/wL2VU1F22DkQ6VZVBBlztjY2Ni3Ys+Wa8tGO5zaNxtR8cPGxsY+gj27oNOC24s++RWctila3UvCxsbGfmN22zy0Ye0mEmjblej92NjY2MexN1OX9rDyBqNdMy+f2NjY2Cex81KUjHWSIrcpabNWJPqbY2NjYx/HTgpYHgNvYt2P8im+CxsbG/to9gyQRwub+zNtaSzuK2FjY2MfxN5/wSwMnq08K8DY2NjYp7I3I6F2IJUf96bU1dkINjY29q3Yj/JJikR7uSdZeR82FzeVsLGxsW/F3tS9WdzbBgD5uGrTSmFjY2Pfnd0WrTxIuDYGnr0+rN7Y2NjYN2RvYoNZsZnN6odNxbMCho2Njf0r2Xm5mpW0q8KGLw4IGxsb+9ezXy+dF5ukydmPpS5oRbCxsbHfnj0b6HzfQeRxcju0wsbGxj6P3Y5jElgeA7RHsL8qhI2NjX0Q+w9nlcRwwkdeCwAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>SpringBoot缓存注解学习笔记之Redis | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="springboot,redis,缓存">
+    <meta name="description" content="之前用SpringBoot+MyBatisPlus+SpringMVC整合搭建了一个基础web开发框架，使用这三个框架搭建出来项目结构非常的清爽，没有过多的配置文件，各个模块之间有清晰的联系，非常适合敏捷开发。
+最近学习了Redis这个基于内存的，Key-Value数据形式的高性能数据库，感觉学习了入门之后很简单，没有体会到它具体能干嘛，我就想着使用Redis这个数据库来整合之前搭建的框架，利用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot缓存注解学习笔记之Redis">
+<meta property="og:url" content="http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="之前用SpringBoot+MyBatisPlus+SpringMVC整合搭建了一个基础web开发框架，使用这三个框架搭建出来项目结构非常的清爽，没有过多的配置文件，各个模块之间有清晰的联系，非常适合敏捷开发。
+最近学习了Redis这个基于内存的，Key-Value数据形式的高性能数据库，感觉学习了入门之后很简单，没有体会到它具体能干嘛，我就想着使用Redis这个数据库来整合之前搭建的框架，利用">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130104722921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130104843343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130105834360?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130150029914?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130151152443?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130152127113?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170130160141130?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-01-30T08:41:26.298Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot缓存注解学习笔记之Redis">
+<meta name="twitter:description" content="之前用SpringBoot+MyBatisPlus+SpringMVC整合搭建了一个基础web开发框架，使用这三个框架搭建出来项目结构非常的清爽，没有过多的配置文件，各个模块之间有清晰的联系，非常适合敏捷开发。
+最近学习了Redis这个基于内存的，Key-Value数据形式的高性能数据库，感觉学习了入门之后很简单，没有体会到它具体能干嘛，我就想着使用Redis这个数据库来整合之前搭建的框架，利用">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170130104722921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">SpringBoot缓存注解学习笔记之Redis</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">SpringBoot缓存注解学习笔记之Redis</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2017-01-30T08:41:58.000Z" itemprop="datePublished" class="page-time">
+  2017-01-30
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#安装Redis"><span class="post-toc-number">1.</span> <span class="post-toc-text">安装Redis</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取之前项目"><span class="post-toc-number">2.</span> <span class="post-toc-text">获取之前项目</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#添加Redis依赖到pom-xml中"><span class="post-toc-number">3.</span> <span class="post-toc-text">添加Redis依赖到pom.xml中</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#在application-properties中添加配置"><span class="post-toc-number">4.</span> <span class="post-toc-text">在application.properties中添加配置</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写一个简单的redis读写测试列"><span class="post-toc-number">5.</span> <span class="post-toc-text">编写一个简单的redis读写测试列</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#编写缓存测试列"><span class="post-toc-number">6.</span> <span class="post-toc-text">编写缓存测试列</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#缓存数据一致性保证"><span class="post-toc-number">7.</span> <span class="post-toc-text">缓存数据一致性保证</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#SpringBoot缓存注解详解"><span class="post-toc-number">8.</span> <span class="post-toc-text">SpringBoot缓存注解详解</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#荆轲-刺秦王"><span class="post-toc-number">9.</span> <span class="post-toc-text">荆轲~刺秦王~~</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-SpringBoot缓存注解学习笔记之Redis"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">SpringBoot缓存注解学习笔记之Redis</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2017年01月30日 16:41" datetime="2017-01-30T08:41:58.000Z"  itemprop="datePublished">2017-01-30</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <blockquote>
+<p>之前用SpringBoot+MyBatisPlus+SpringMVC整合搭建了一个基础web开发框架，使用这三个框架搭建出来项目结构非常的清爽，没有过多的配置文件，各个模块之间有清晰的联系，非常适合敏捷开发。</p>
+<p>最近学习了Redis这个基于内存的，Key-Value数据形式的高性能数据库，感觉学习了入门之后很简单，没有体会到它具体能干嘛，我就想着使用Redis这个数据库来整合之前搭建的框架，利用Spring中的缓存机制，将查询的信息缓存到Redis中。</p>
+</blockquote>
+<h2 id="安装Redis"><a href="#安装Redis" class="headerlink" title="安装Redis"></a>安装Redis</h2><blockquote>
+<p>Window 下安装 下载地址：<a href="https://github.com/MSOpenTech/redis/relea" target="_blank" rel="external">https://github.com/MSOpenTech/redis/relea</a>ses。 Redis 支持32 位和64 位。这个需要根据你系统平台的实际情况选择，这里我们下载 Redis-x64-xxx.zip压缩包到 C盘的tools目录中，解压后，将文件夹重新命名为 redis。</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130104722921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="下载Redis版本" title="">
+                </div>
+                <div class="image-caption">下载Redis版本</div>
+            </figure>
+<blockquote>
+<p>打开一个 cmd 窗口 使用cd命令切换目录到 C:\tools\redis 运行 redis-server.exe redis.windows.conf 。<br>如果想方便的话，可以把 redis 的路径加到系统的环境变量里，这样就省得再输路径了，后面的那个 redis.windows.conf 可以省略，如果省略，会启用默认的。输入之后，会显示如下界面：</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130104843343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="启动成功后" title="">
+                </div>
+                <div class="image-caption">启动成功后</div>
+            </figure>
+<blockquote>
+<p>启动成功后不要关闭命令窗口，不然redis服务也会关闭。如果不想每次使用都一直开着这个命令窗口，可以将redis服务添加到windows的服务中：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">安装命令:</div><div class="line">redis-server.exe --service-install redis.windows.conf --loglevel verbose </div><div class="line"></div><div class="line">卸载命令：</div><div class="line">redis-server --service-uninstall</div></pre></td></tr></table></figure>
+<blockquote>
+<p> 安装成功后，可以在windows的服务管理中对redis进行管理，就不用每次都打开命令窗口来启动redis服务了，如下图：</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130105834360?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="在windows中管理redis服务" title="">
+                </div>
+                <div class="image-caption">在windows中管理redis服务</div>
+            </figure>
+<h2 id="获取之前项目"><a href="#获取之前项目" class="headerlink" title="获取之前项目"></a>获取之前项目</h2><blockquote>
+<p>环境我就直接在之前的整合框架上进行搭建，之前项目下载地址：<a href="https://git.oschina.net/z77z/springboot_mybatisplus" target="_blank" rel="external">https://git.oschina.net/z77z/springboot_mybatisplus</a><br>注意：之前搭建这个框架的时候我为了获取基础数据，在启动springboot的时候也启动了爬虫程序，如果不想每次启动都启动爬虫可以注释掉启动类中的run方法。</p>
+</blockquote>
+<h2 id="添加Redis依赖到pom-xml中"><a href="#添加Redis依赖到pom-xml中" class="headerlink" title="添加Redis依赖到pom.xml中"></a>添加Redis依赖到pom.xml中</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="在application-properties中添加配置"><a href="#在application-properties中添加配置" class="headerlink" title="在application.properties中添加配置"></a>在application.properties中添加配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"># REDIS (RedisProperties)</div><div class="line"># Redis数据库索引（默认为0）</div><div class="line">spring.redis.database=0</div><div class="line"># Redis服务器地址</div><div class="line">spring.redis.host=localhost</div><div class="line"># Redis服务器连接端口</div><div class="line">spring.redis.port=6379</div><div class="line"># Redis服务器连接密码（默认为空）</div><div class="line">spring.redis.password=</div><div class="line"># 连接池最大连接数（使用负值表示没有限制）</div><div class="line">spring.redis.pool.max-active=8</div><div class="line"># 连接池最大阻塞等待时间（使用负值表示没有限制）</div><div class="line">spring.redis.pool.max-wait=-1</div><div class="line"># 连接池中的最大空闲连接</div><div class="line">spring.redis.pool.max-idle=8</div><div class="line"># 连接池中的最小空闲连接</div><div class="line">spring.redis.pool.min-idle=0</div><div class="line"># 连接超时时间（毫秒）</div><div class="line">spring.redis.timeout=0</div></pre></td></tr></table></figure>
+<blockquote>
+<p>我们需要做的配置到这里就已经完成了，Spring Boot会在侦测到存在Redis的依赖并且Redis的配置是可用的情况下，使用RedisCacheManager初始化CacheManager。也就是说要使用缓存的话，SpringBoot就会选择Redis来作为缓存的容器。</p>
+</blockquote>
+<h2 id="编写一个简单的redis读写测试列"><a href="#编写一个简单的redis读写测试列" class="headerlink" title="编写一个简单的redis读写测试列"></a>编写一个简单的redis读写测试列</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * redis读写测试</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="meta">@SpringBootTest</span>(classes = Application.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCacheTest</span> </span>&#123;</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	StringRedisTemplate stringRedisTemplate;</div><div class="line">	</div><div class="line">	<span class="meta">@Test</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">redisTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line"></div><div class="line">		<span class="comment">//保存字符串</span></div><div class="line">		stringRedisTemplate.opsForValue().set(<span class="string">"aaa"</span>, <span class="string">"111"</span>);</div><div class="line">		<span class="comment">//读取字符串</span></div><div class="line">		String aaa = stringRedisTemplate.opsForValue().get(<span class="string">"aaa"</span>);</div><div class="line">		System.out.println(aaa);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>打印结果：</strong></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130150029914?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="redis读写测试结果" title="">
+                </div>
+                <div class="image-caption">redis读写测试结果</div>
+            </figure>
+<h2 id="编写缓存测试列"><a href="#编写缓存测试列" class="headerlink" title="编写缓存测试列"></a>编写缓存测试列</h2><p><strong>不使用缓存：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取数据，并且做缓存处理</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCache</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line">	<span class="comment">//@Cacheable(value = "BeautifulPictures")</span></div><div class="line">	<span class="function"><span class="keyword">public</span> BeautifulPictures <span class="title">getBeautifulPicturesList</span><span class="params">(String id)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> beautifulPicturesService.selectById(id);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 测试类</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="meta">@SpringBootTest</span>(classes = Application.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCacheTest</span> </span>&#123;</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	StringRedisTemplate stringRedisTemplate;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	RedisCache redisCache;</div><div class="line">	</div><div class="line">	<span class="meta">@Test</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">redisTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line"></div><div class="line">		<span class="comment">//保存字符串</span></div><div class="line">		stringRedisTemplate.opsForValue().set(<span class="string">"aaa"</span>, <span class="string">"111"</span>);</div><div class="line">		<span class="comment">//读取字符串</span></div><div class="line">		String aaa = stringRedisTemplate.opsForValue().get(<span class="string">"aaa"</span>);</div><div class="line">		System.out.println(aaa);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="meta">@Test</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">CacheTest</span><span class="params">()</span> </span>&#123;</div><div class="line">		BeautifulPictures beautifulPicture = redisCache.getBeautifulPicturesList(<span class="string">"1011"</span>);</div><div class="line">		System.out.println(<span class="string">"第一次查询结果："</span>);</div><div class="line">		System.out.println(beautifulPicture);</div><div class="line"></div><div class="line">		BeautifulPictures beautifulPicture1 = redisCache.getBeautifulPicturesList(<span class="string">"1011"</span>);</div><div class="line">		System.out.println(<span class="string">"第二次查询结果："</span>);</div><div class="line">		System.out.println(beautifulPicture1);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行结果：</p>
+<p><img src="http://img.blog.csdn.net/20170130151152443?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="不使用缓存测试结果"></p>
+<blockquote>
+<p>可以从日志中看出两次查询都是执行了sql，也就是执行了<code>getBeautifulPicturesList</code>这个方法</p>
+</blockquote>
+<p><strong>使用缓存：</strong></p>
+<blockquote>
+<p>在getBeautifulPicturesList方法的上面添加@Cacheable(value = “BeautifulPictures”)注解，当请求这个方法时会先判断缓存中是否存在，存在就在缓存中获取，不会执行这个方法。不存在就正常执行这个方法获取返回值并且存如缓存中。添加注解后执行结果如下：</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130152127113?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="添加缓存注释后" title="">
+                </div>
+                <div class="image-caption">添加缓存注释后</div>
+            </figure>
+<blockquote>
+<p>从日志中可以看出，第一次查询的时候执行的sql，而第二次查询的时候没有执行sql，说明是从缓存中获取的数据。</p>
+</blockquote>
+<h2 id="缓存数据一致性保证"><a href="#缓存数据一致性保证" class="headerlink" title="缓存数据一致性保证"></a>缓存数据一致性保证</h2><blockquote>
+<p>CRUD (Create 创建，Retrieve 读取，Update 更新，Delete 删除) 操作中，除了 R具备幂等性，其他三个发生的时候都可能会造成缓存结果和数据库不一致。为了保证缓存数据的一致性，在进行 CUD 操作的时候我们需要对可能影响到的缓存进行更新或者清除。如下：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取数据，并且做缓存处理</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCache</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line">	</div><div class="line">	<span class="comment">//查询</span></div><div class="line">	<span class="meta">@Cacheable</span>(value = <span class="string">"beautifulPictures"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> BeautifulPictures <span class="title">getBeautifulPicturesList</span><span class="params">(String id)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> beautifulPicturesService.selectById(id);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">//修改</span></div><div class="line">	<span class="meta">@CachePut</span>(value = <span class="string">"beautifulPictures"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateBeautifulPicture</span><span class="params">(String id)</span> </span>&#123;</div><div class="line">		BeautifulPictures beautifulPictures = <span class="keyword">new</span> BeautifulPictures();</div><div class="line">		beautifulPictures.setTitle(<span class="string">"Title被我修改了一下，哈哈"</span>);</div><div class="line">		beautifulPictures.setId(id);</div><div class="line">		beautifulPicturesService.updateById(beautifulPictures);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 测试类</div><div class="line"> * <span class="doctag">@author</span> z77z</div><div class="line"> *</div><div class="line"> */</div><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="meta">@SpringBootTest</span>(classes = Application.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCacheTest</span> </span>&#123;</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	BeautifulPicturesService beautifulPicturesService;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	StringRedisTemplate stringRedisTemplate;</div><div class="line">	</div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	RedisCache redisCache;</div><div class="line">	</div><div class="line">	<span class="meta">@Test</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">redisTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line"></div><div class="line">		<span class="comment">//保存字符串</span></div><div class="line">		stringRedisTemplate.opsForValue().set(<span class="string">"aaa"</span>, <span class="string">"111"</span>);</div><div class="line">		<span class="comment">//读取字符串</span></div><div class="line">		String aaa = stringRedisTemplate.opsForValue().get(<span class="string">"aaa"</span>);</div><div class="line">		System.out.println(aaa);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="meta">@Test</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">CacheTest</span><span class="params">()</span> </span>&#123;</div><div class="line">		String id = <span class="string">"1"</span>;</div><div class="line">		BeautifulPictures beautifulPicture = redisCache.getBeautifulPicturesList(id);</div><div class="line">		System.out.println(<span class="string">"第一次查询结果："</span>);</div><div class="line">		System.out.println(beautifulPicture);</div><div class="line"></div><div class="line">		BeautifulPictures beautifulPicture1 = redisCache.getBeautifulPicturesList(id);</div><div class="line">		System.out.println(<span class="string">"第二次查询结果："</span>);</div><div class="line">		System.out.println(beautifulPicture1);</div><div class="line">		</div><div class="line">		redisCache.updateBeautifulPicture(id);</div><div class="line">		</div><div class="line">		BeautifulPictures beautifulPicture2 = redisCache.getBeautifulPicturesList(id);</div><div class="line">		System.out.println(<span class="string">"第三次查询结果："</span>);</div><div class="line">		System.out.println(beautifulPicture2);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>保持缓存一致性测试结果：</strong></p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20170130160141130?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="保持缓存的一致性测试" title="">
+                </div>
+                <div class="image-caption">保持缓存的一致性测试</div>
+            </figure>
+<blockquote>
+<p>在会导致数据发生改变的方法上添加<code>@CachePut(value = &quot;beautifulPictures&quot;)</code>注解，添加后会更新缓存中的值，并且每次都会正常执行方法内容。</p>
+</blockquote>
+<h2 id="SpringBoot缓存注解详解"><a href="#SpringBoot缓存注解详解" class="headerlink" title="SpringBoot缓存注解详解"></a>SpringBoot缓存注解详解</h2><ul>
+<li>@Cacheable：作用是主要针对方法配置，能够根据方法的请求参数对其结果进行缓存</li>
+</ul>
+<blockquote>
+<p>主要参数说明：</p>
+<ol>
+<li><code>value</code>：缓存的名称，在 spring 配置文件中定义，必须指定至少一个，例如：@Cacheable(value=”mycache”) 或者 @Cacheable(value={”cache1”,”cache2”}。</li>
+<li><code>key</code>：缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合，例如：@Cacheable(value=”testcache”,key=”#userName”)。</li>
+<li><code>condition</code>：缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才进行缓存，例如：@Cacheable(value=”testcache”,condition=”#userName.length()&gt;2。</li>
+</ol>
+</blockquote>
+<ul>
+<li>@CachePut：作用是主要针对方法配置，能够根据方法的请求参数对其结果进行缓存，和 @Cacheable 不同的是，它每次都会触发真实方法的调用</li>
+</ul>
+<blockquote>
+<p>主要参数说明：</p>
+<ol>
+<li><code>value</code>，<code>key</code>和<code>condition</code>参数配置和@Cacheable一样。</li>
+</ol>
+</blockquote>
+<ul>
+<li>@CacheEvict：作用是主要针对方法配置，能够根据一定的条件对缓存进行清空</li>
+</ul>
+<blockquote>
+<p>主要参数说明：</p>
+<ol>
+<li><code>value</code>，<code>key</code>和<code>condition</code>参数配置和@Cacheable一样。</li>
+<li><code>allEntries</code>：是否清空所有缓存内容，缺省为 false，如果指定为 true，则方法调用后将立即清空所有缓存，例如：@CachEvict(value=”testcache”,allEntries=true)。</li>
+<li><code>beforeInvocation</code>：是否在方法执行前就清空，缺省为 false，如果指定为 true，则在方法还没有执行的时候就清空缓存，缺省情况下，如果方法执行抛出异常，则不会清空缓存，例如@CachEvict(value=”testcache”，beforeInvocation=true)。</li>
+</ol>
+</blockquote>
+<p><strong>另外说下： @cache（“something”);这个相当于save（）操作，@cachePut相当于Update（）操作，只要他标示的方法被调用，那么都会缓存起来，而@cache则是先看下有没已经缓存了，然后再选择是否执行方法。@CacheEvict相当于Delete（）操作。用来清除缓存用的。</strong></p>
+<h2 id="荆轲-刺秦王"><a href="#荆轲-刺秦王" class="headerlink" title="荆轲~刺秦王~~"></a>荆轲~刺秦王~~</h2>
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-01-30T08:41:26.298Z" itemprop="dateUpdated">2017年1月30日 16:41</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" target="_blank" rel="external">http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存/">缓存</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&title=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&title=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/02/06/SB集成Redis学习笔记之实际应用场景-java干货/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">SB集成Redis学习笔记之实际应用场景-java干货</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2017/01/23/SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">SpringBoot+SpringMVC+MybatisPlus框架整合练习之【美女图片】爬虫---图文详细流程</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="SpringBoot缓存注解学习笔记之Redis" data-title="SpringBoot缓存注解学习笔记之Redis" data-url="http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&title=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&title=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《SpringBoot缓存注解学习笔记之Redis》 — z77z的小码窝&url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2017/01/30/SpringBoot缓存注解学习笔记之Redis/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACuUlEQVR42u3awW7rMAwEQP//T+ddC6RxdkUpzQNGp8CoLQ0PEkvquuLx+DF+Pnn+/fxW/vzVjM+zbx54eHh4g6W/+tz9BMlS7p/ff+1VQKMQ4OHh4R3j3W/f98tKSMmhkgSoPnLw8PDwvoDXUh/BmBwSeHh4eP8LL0ma2+LF2nGCh4eH91e8fMtOkuB2i88LuwdrLXh4eHgxL+8ifc/vI/09PDw8vHFXvd30J7PM1/bLN/Hw8PAO8CZXoNbS5Xl5or0choeHh3eCt7dYsHZstMXcPIh4eHh4e3mTbTpPgu/fzY+Z9gIWHh4e3gleexWgTbLX2Hlwo0MIDw8Pbytvbcq8hZ9fJsiPnPygwsPDwzvByxPlvalz2zBba4zh4eHhneAl2/28ATZP0NtkGg8PD+8cr02s8yNkDZMEtA09Hh4e3l5eXg7It+O1JDgPVrFmPDw8vGO8dnFXPNq3JuH75QkeHh7eMV6+WddtpzhRXutbvTke8PDw8A7w2gVd5Vi7HJAk0NuuEeDh4eGVvPYf/nYjHlWXl4L45uoAHh4e3iZe3gCbFGRbWL6eNzcj8PDw8Lby2kb+WmEiuSyVB7r+XwEPDw/vGG/vxYJR4yoOTfSXeHh4eFt5a8WINs2dpMX5ldbiZgQeHh7egNemucnEeSqcf79NuPHw8PA+z6tbTck0cYrcNuHerB8PDw/vGG9SzF1LmtdKyUkJAw8PD+8zvF3LWkuUJ8fVm3fx8PDwtvIe5dh71WAtHS+uauHh4eEd4LVbbbuh56WEPKzzYwMPDw9vzpt8ei1RTgoKu64v4OHh4Z3j5Vv8/fR5CK5jAw8PD+/beHnzfluluQxftAg8PDy8j/MmyW5eYmiLF1ceYzw8PLwxL296zVtWa1t8ko6/PBjw8PDwtvLaBLc9MNaOk70JOh4eHt4m3j/ORFS5ujfl0AAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

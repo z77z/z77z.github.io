@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取 | z77z的小码窝 | 年少无为，卖码为生。</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#ffff00">
+    
+    
+    <meta name="keywords" content="爬虫,java,spring,mybatis">
+    <meta name="description" content="一.此爬虫介绍
+今日头条本身就是做爬虫的，爬取各大网站的图片文字信息，再自己整合后推送给用户，特别是里面的动态图片，很有意思。在网上搜了搜，大多都是用Python来写的，本人是学习javaweb这块的，对正则表达式也不是很熟悉，就想着能不能换个我熟悉的方式来写。此爬虫使用spring+mybatis框架整合实现，使用mysql数据库保存爬取的数据，用jsoup来操作HTML的标签节点（完美避开正则">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取">
+<meta property="og:url" content="http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/index.html">
+<meta property="og:site_name" content="z77z的小码窝">
+<meta property="og:description" content="一.此爬虫介绍
+今日头条本身就是做爬虫的，爬取各大网站的图片文字信息，再自己整合后推送给用户，特别是里面的动态图片，很有意思。在网上搜了搜，大多都是用Python来写的，本人是学习javaweb这块的，对正则表达式也不是很熟悉，就想着能不能换个我熟悉的方式来写。此爬虫使用spring+mybatis框架整合实现，使用mysql数据库保存爬取的数据，用jsoup来操作HTML的标签节点（完美避开正则">
+<meta property="og:image" content="http://img.blog.csdn.net/20161230212819882?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161230212738459?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226223513868?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226223904416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226225657064?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226230850348?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226230958084?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20161226231623684?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-01-05T13:16:18.197Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取">
+<meta name="twitter:description" content="一.此爬虫介绍
+今日头条本身就是做爬虫的，爬取各大网站的图片文字信息，再自己整合后推送给用户，特别是里面的动态图片，很有意思。在网上搜了搜，大多都是用Python来写的，本人是学习javaweb这块的，对正则表达式也不是很熟悉，就想着能不能换个我熟悉的方式来写。此爬虫使用spring+mybatis框架整合实现，使用mysql数据库保存爬取的数据，用jsoup来操作HTML的标签节点（完美避开正则">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20161230212819882?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+        <link rel="alternative" href="/atom.xml" title="z77z的小码窝" type="application/atom+xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css?v=1.4.3">
+    <script>window.lazyScripts=[]</script>
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">邹海清</h5>
+          <a href="mailto:1093615728@qq.com" title="1093615728@qq.com" class="mail">1093615728@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://git.oschina.net/z77z" target="_blank" >
+                <i class="icon icon-lg icon-git"></i>
+                git
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="http://t.qq.com/zouhaiqing123" target="_blank" >
+                <i class="icon icon-lg icon-weibo"></i>
+                微博
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/custom"  >
+                <i class="icon icon-lg icon-link"></i>
+                404页面测试
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2016-12-29T12:42:58.000Z" itemprop="datePublished" class="page-time">
+  2016-12-29
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#一-此爬虫介绍"><span class="post-toc-number">1.</span> <span class="post-toc-text">一.此爬虫介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#先上效果图"><span class="post-toc-number">2.</span> <span class="post-toc-text">先上效果图</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#二-技术选型"><span class="post-toc-number">3.</span> <span class="post-toc-text">二.技术选型</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#三-找规律，划重点"><span class="post-toc-number">4.</span> <span class="post-toc-text">三.找规律，划重点</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#四-开始搭框架撸代码"><span class="post-toc-number">5.</span> <span class="post-toc-text">四.开始搭框架撸代码</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#五-最后"><span class="post-toc-number">6.</span> <span class="post-toc-text">五.最后</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#六-JUST-DO-IT"><span class="post-toc-number">7.</span> <span class="post-toc-text">六.JUST DO IT</span></a></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2016年12月29日 20:42" datetime="2016-12-29T12:42:58.000Z"  itemprop="datePublished">2016-12-29</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+            
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h2 id="一-此爬虫介绍"><a href="#一-此爬虫介绍" class="headerlink" title="一.此爬虫介绍"></a>一.此爬虫介绍</h2><blockquote>
+<p>今日头条本身就是做爬虫的，爬取各大网站的图片文字信息，再自己整合后推送给用户，特别是里面的动态图片，很有意思。在网上搜了搜，大多都是用Python来写的，本人是学习javaweb这块的，对正则表达式也不是很熟悉，就想着能不能换个我熟悉的方式来写。此爬虫使用spring+mybatis框架整合实现，使用mysql数据库保存爬取的数据，用jsoup来操作HTML的标签节点（完美避开正则表达式），获取文章中动态图片的链接，通过响应头中“Content-Type”的值来判断图片的格式，再将图片保存在本地。当然也可以爬取里面的文字，比如一些搞笑的黄段子，在此基础上稍加改动就可以实现，此爬虫只是提供一个入门的思路，更多好玩的爬虫玩法还待大家去开发，哈哈。</p>
+</blockquote>
+<h2 id="先上效果图"><a href="#先上效果图" class="headerlink" title="先上效果图"></a>先上效果图</h2><p>抓取的动态图：</p>
+<p><img src="http://img.blog.csdn.net/20161230212819882?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<p>数据库：</p>
+<p><img src="http://img.blog.csdn.net/20161230212738459?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<h2 id="二-技术选型"><a href="#二-技术选型" class="headerlink" title="二.技术选型"></a>二.技术选型</h2><blockquote>
+<ol>
+<li>核心语言：java；</li>
+<li>核心框架：spring；</li>
+<li>持久层框架：mybatis；</li>
+<li>数据库连接池：Alibaba Drui；</li>
+<li>日志管理：Log4j；</li>
+<li>jar包管理：maven； 。。。。</li>
+</ol>
+</blockquote>
+<h2 id="三-找规律，划重点"><a href="#三-找规律，划重点" class="headerlink" title="三.找规律，划重点"></a>三.找规律，划重点</h2><blockquote>
+<p>打开头条首页，找到点击搞笑模块，点击F12,下滚后加载下一页，发现是通过ajax请求api来获取的数据，如下图：</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20161226223513868?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<blockquote>
+<p><strong>这是响应的json数据，里面的参数和值顾名思义大家都懂得。</strong></p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20161226223904416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<blockquote>
+<p>是ajax访问就好解决了，通过我百度谷歌各种研究后发现，ajax请求的前三个参数是不变的，改变category参数是请求不同的模块，本列子是请求的搞笑模块所以值为funny，max_behot_time和max_behot_time_tmp这两个参数值是时间戳，首次请求是0，之后的值是响应json数据里面的next中的值。as和cp值是通过一段js生成的，其实就是一个加密了的时间戳而已。js代码后面会贴。</p>
+</blockquote>
+<h2 id="四-开始搭框架撸代码"><a href="#四-开始搭框架撸代码" class="headerlink" title="四.开始搭框架撸代码"></a>四.开始搭框架撸代码</h2><blockquote>
+<p>项目搭建后之后为下图所示的文件结构，不懂得自行谷歌  哈哈</p>
+</blockquote>
+<p><img src="http://img.blog.csdn.net/20161226225657064?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<blockquote>
+<p><strong>不多说直接上核心代码了：</strong></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TouTiaoCrawler</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">// 搞笑板块的api地址</span></div><div class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FUNNY = <span class="string">"http://www.toutiao.com/api/pc/feed/?utm_source=toutiao&amp;widen=1"</span>;</div><div class="line"></div><div class="line">	<span class="comment">// 头条首页地址</span></div><div class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TOUTIAO = <span class="string">"http://www.toutiao.com"</span>;</div><div class="line"></div><div class="line">	<span class="comment">// 使用"spring.xml"和"spring-mybatis.xml"这两个配置文件创建Spring上下文</span></div><div class="line">	<span class="keyword">static</span> ApplicationContext ac = <span class="keyword">new</span> ClassPathXmlApplicationContext(</div><div class="line">			<span class="string">"spring-mybatis.xml"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 从Spring容器中根据bean的id取出我们要使用的funnyMapper对象</span></div><div class="line">	<span class="keyword">static</span> FunnyMapper funnyMapper = (FunnyMapper) ac.getBean(<span class="string">"funnyMapper"</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 接口访问次数</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> refreshCount = <span class="number">0</span>;</div><div class="line"></div><div class="line">	<span class="comment">// 时间戳</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> time = <span class="number">0</span>;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		System.out.println(<span class="string">"----------开始干活！-----------------"</span>);</div><div class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">			crawler(time);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">crawler</span><span class="params">(<span class="keyword">long</span> hottime)</span> </span>&#123;<span class="comment">// 传入时间戳，会获取这个时间戳的内容</span></div><div class="line">		refreshCount++;</div><div class="line">		System.out.println(<span class="string">"----------第"</span> + refreshCount + <span class="string">"次刷新------返回的请求时间为："</span></div><div class="line">				+ hottime + <span class="string">"----------"</span>);</div><div class="line">		String url = FUNNY + <span class="string">"&amp;max_behot_time="</span> + hottime</div><div class="line">				+ <span class="string">"&amp;max_behot_time_tmp="</span> + hottime;</div><div class="line">		JSONObject param = getUrlParam(); <span class="comment">// 获取用js代码得到的as和cp的值</span></div><div class="line">		<span class="comment">// 定义接口访问的模块</span></div><div class="line">		<span class="comment">/*</span></div><div class="line">		 * __all__ : 推荐 news_hot: 热点 funny：搞笑</div><div class="line">		 */</div><div class="line">		String <span class="keyword">module</span> = <span class="string">"funny"</span>;</div><div class="line">		url += <span class="string">"&amp;as="</span> + param.get(<span class="string">"as"</span>) + <span class="string">"&amp;cp="</span> + param.get(<span class="string">"cp"</span>)</div><div class="line">				+ <span class="string">"&amp;category="</span> + <span class="keyword">module</span>;</div><div class="line">		JSONObject json = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			json = getReturnJson(url);<span class="comment">// 获取json串</span></div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (json != <span class="keyword">null</span>) &#123;</div><div class="line">			time = json.getJSONObject(<span class="string">"next"</span>).getLongValue(<span class="string">"max_behot_time"</span>);</div><div class="line">			JSONArray data = json.getJSONArray(<span class="string">"data"</span>);</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; data.size(); i++) &#123;</div><div class="line">				<span class="keyword">try</span> &#123;</div><div class="line">					JSONObject obj = (JSONObject) data.get(i);</div><div class="line">					<span class="comment">// 判断这条文章是否已经爬过</span></div><div class="line">					<span class="keyword">if</span> (funnyMapper.selectByGroupId((String) obj</div><div class="line">							.get(<span class="string">"group_id"</span>)) != <span class="keyword">null</span>) &#123;</div><div class="line">						System.out</div><div class="line">								.println(<span class="string">"----------此文章已经爬过啦！-----------------"</span>);</div><div class="line">						<span class="keyword">continue</span>;</div><div class="line">					&#125;</div><div class="line">					<span class="comment">// 访问页面返回document对象</span></div><div class="line">					String url1 = TOUTIAO + <span class="string">"/a"</span> + obj.getString(<span class="string">"group_id"</span>);</div><div class="line">					Document document = getArticleInfo(url1);</div><div class="line">					System.out.println(<span class="string">"----------成功访问了文章："</span> + url1</div><div class="line">							+ <span class="string">"-----------------"</span>);</div><div class="line">					<span class="comment">// 将document也存入</span></div><div class="line">					obj.put(<span class="string">"document"</span>, document.toString());</div><div class="line">					<span class="comment">// 将json对象转换成java Entity对象</span></div><div class="line">					Funny funny = JSON.parseObject(obj.toString(), Funny.class);</div><div class="line">					<span class="comment">// json入库</span></div><div class="line">					funny.setBehotTime(<span class="keyword">new</span> Date());</div><div class="line">					funnyMapper.insertSelective(funny);</div><div class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			System.out.println(<span class="string">"----------返回的json列表为空----------"</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 访问接口，返回json封装的数据格式</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JSONObject <span class="title">getReturnJson</span><span class="params">(String url)</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			URL httpUrl = <span class="keyword">new</span> URL(url);</div><div class="line">			BufferedReader in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(</div><div class="line">					httpUrl.openStream(), <span class="string">"UTF-8"</span>));</div><div class="line">			String line = <span class="keyword">null</span>;</div><div class="line">			String content = <span class="string">""</span>;</div><div class="line">			<span class="keyword">while</span> ((line = in.readLine()) != <span class="keyword">null</span>) &#123;</div><div class="line">				content += line;</div><div class="line">			&#125;</div><div class="line">			in.close();</div><div class="line">			<span class="keyword">return</span> JSONObject.parseObject(content);</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			System.err.println(<span class="string">"访问失败:"</span> + url);</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 获取网站的document对象</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Document <span class="title">getArticleInfo</span><span class="params">(String url)</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Connection connect = Jsoup.connect(url);</div><div class="line">			Document document;</div><div class="line">			document = connect.get();</div><div class="line">			Elements article = document.getElementsByClass(<span class="string">"article-content"</span>);</div><div class="line">			<span class="keyword">if</span> (article.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">				Elements a = article.get(<span class="number">0</span>).getElementsByTag(<span class="string">"img"</span>);</div><div class="line">				<span class="keyword">if</span> (a.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">					<span class="keyword">for</span> (Element e : a) &#123;</div><div class="line">						String url2 = e.attr(<span class="string">"src"</span>);</div><div class="line">						<span class="comment">// 下载img标签里面的图片到本地</span></div><div class="line">						saveToFile(url2);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">return</span> document;</div><div class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">			System.err.println(<span class="string">"访问文章页失败:"</span> + url + <span class="string">"  原因"</span> + e.getMessage());</div><div class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 执行js获取as和cp参数值</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JSONObject <span class="title">getUrlParam</span><span class="params">()</span> </span>&#123;</div><div class="line">		JSONObject jsonObject = <span class="keyword">null</span>;</div><div class="line">		FileReader reader = <span class="keyword">null</span>;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			ScriptEngineManager manager = <span class="keyword">new</span> ScriptEngineManager();</div><div class="line">			ScriptEngine engine = manager.getEngineByName(<span class="string">"javascript"</span>);</div><div class="line"></div><div class="line">			String jsFileName = <span class="string">"toutiao.js"</span>; <span class="comment">// 读取js文件</span></div><div class="line"></div><div class="line">			reader = <span class="keyword">new</span> FileReader(jsFileName); <span class="comment">// 执行指定脚本</span></div><div class="line">			engine.eval(reader);</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (engine <span class="keyword">instanceof</span> Invocable) &#123;</div><div class="line">				Invocable invoke = (Invocable) engine;</div><div class="line">				Object obj = invoke.invokeFunction(<span class="string">"getParam"</span>);</div><div class="line">				jsonObject = JSONObject.parseObject(obj != <span class="keyword">null</span> ? obj</div><div class="line">						.toString() : <span class="keyword">null</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; <span class="keyword">finally</span> &#123;</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				<span class="keyword">if</span> (reader != <span class="keyword">null</span>) &#123;</div><div class="line">					reader.close();</div><div class="line">				&#125;</div><div class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> jsonObject;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 通过url获取图片并保存在本地</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">saveToFile</span><span class="params">(String destUrl)</span> </span>&#123;</div><div class="line">		FileOutputStream fos = <span class="keyword">null</span>;</div><div class="line">		BufferedInputStream bis = <span class="keyword">null</span>;</div><div class="line">		HttpURLConnection httpUrl = <span class="keyword">null</span>;</div><div class="line">		URL url = <span class="keyword">null</span>;</div><div class="line">		String uuid = UUID.randomUUID().toString();</div><div class="line">		String fileAddress = <span class="string">"d:\\imag/"</span> + uuid;<span class="comment">// 存储本地文件地址</span></div><div class="line">		<span class="keyword">int</span> BUFFER_SIZE = <span class="number">1024</span>;</div><div class="line">		<span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</div><div class="line">		<span class="keyword">int</span> size = <span class="number">0</span>;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			url = <span class="keyword">new</span> URL(destUrl);</div><div class="line">			httpUrl = (HttpURLConnection) url.openConnection();</div><div class="line">			httpUrl.connect();</div><div class="line">			String Type = httpUrl.getHeaderField(<span class="string">"Content-Type"</span>);</div><div class="line">			<span class="keyword">if</span> (Type.equals(<span class="string">"image/gif"</span>)) &#123;</div><div class="line">				fileAddress += <span class="string">".gif"</span>;</div><div class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (Type.equals(<span class="string">"image/png"</span>)) &#123;</div><div class="line">				fileAddress += <span class="string">".png"</span>;</div><div class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (Type.equals(<span class="string">"image/jpeg"</span>)) &#123;</div><div class="line">				fileAddress += <span class="string">".jpg"</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				System.err.println(<span class="string">"未知图片格式"</span>);</div><div class="line">				<span class="keyword">return</span>;</div><div class="line">			&#125;</div><div class="line">			bis = <span class="keyword">new</span> BufferedInputStream(httpUrl.getInputStream());</div><div class="line">			fos = <span class="keyword">new</span> FileOutputStream(fileAddress);</div><div class="line">			<span class="keyword">while</span> ((size = bis.read(buf)) != -<span class="number">1</span>) &#123;</div><div class="line">				fos.write(buf, <span class="number">0</span>, size);</div><div class="line">			&#125;</div><div class="line">			fos.flush();</div><div class="line">			System.out.println(<span class="string">"图片保存成功！地址："</span> + fileAddress);</div><div class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; <span class="keyword">catch</span> (ClassCastException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; <span class="keyword">finally</span> &#123;</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				fos.close();</div><div class="line">				bis.close();</div><div class="line">				httpUrl.disconnect();</div><div class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125; <span class="keyword">catch</span> (NullPointerException e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>获取as和cp参数的js代码</strong></p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getParam</span>(<span class="params"></span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> asas;</div><div class="line">    <span class="keyword">var</span> cpcp;</div><div class="line">    <span class="keyword">var</span> t = <span class="built_in">Math</span>.floor((<span class="keyword">new</span> <span class="built_in">Date</span>).getTime() / <span class="number">1e3</span>)</div><div class="line">      , e = t.toString(<span class="number">16</span>).toUpperCase()</div><div class="line">      , i = md5(t).toString().toUpperCase();</div><div class="line">    <span class="keyword">if</span> (<span class="number">8</span> != e.length)&#123;</div><div class="line">        asas = <span class="string">"479BB4B7254C150"</span>;</div><div class="line">        cpcp = <span class="string">"7E0AC8874BB0985"</span>;</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> n = i.slice(<span class="number">0</span>, <span class="number">5</span>), o = i.slice(<span class="number">-5</span>), a = <span class="string">""</span>, s = <span class="number">0</span>; <span class="number">5</span> &gt; s; s++)&#123;</div><div class="line">            a += n[s] + e[s];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> r = <span class="string">""</span>, c = <span class="number">0</span>; <span class="number">5</span> &gt; c; c++)&#123;</div><div class="line">            r += e[c + <span class="number">3</span>] + o[c];</div><div class="line">        &#125;</div><div class="line">        asas = <span class="string">"A1"</span> + a + e.slice(<span class="number">-3</span>);</div><div class="line">        cpcp= e.slice(<span class="number">0</span>, <span class="number">3</span>) + r + <span class="string">"E1"</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="string">'&#123;"as":"'</span>+asas+<span class="string">'","cp":"'</span>+cpcp+<span class="string">'"&#125;'</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">!<span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</div><div class="line"><span class="meta">    "use strict"</span>;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">t</span>(<span class="params">e, t</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> n = (<span class="number">65535</span> &amp; e) + (<span class="number">65535</span> &amp; t)</div><div class="line">          , r = (e &gt;&gt; <span class="number">16</span>) + (t &gt;&gt; <span class="number">16</span>) + (n &gt;&gt; <span class="number">16</span>);</div><div class="line">        <span class="keyword">return</span> r &lt;&lt; <span class="number">16</span> | <span class="number">65535</span> &amp; n</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">n</span>(<span class="params">e, t</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> e &lt;&lt; t | e &gt;&gt;&gt; <span class="number">32</span> - t</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">r</span>(<span class="params">e, r, o, i, a, u</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> t(n(t(t(r, e), t(i, u)), a), o)</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">o</span>(<span class="params">e, t, n, o, i, a, u</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> r(t &amp; n | ~t &amp; o, e, t, i, a, u)</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">i</span>(<span class="params">e, t, n, o, i, a, u</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> r(t &amp; o | n &amp; ~o, e, t, i, a, u)</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params">e, t, n, o, i, a, u</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> r(t ^ n ^ o, e, t, i, a, u)</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">u</span>(<span class="params">e, t, n, o, i, a, u</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> r(n ^ (t | ~o), e, t, i, a, u)</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">s</span>(<span class="params">e, n</span>) </span>&#123;</div><div class="line">        e[n &gt;&gt; <span class="number">5</span>] |= <span class="number">128</span> &lt;&lt; n % <span class="number">32</span>,</div><div class="line">        e[(n + <span class="number">64</span> &gt;&gt;&gt; <span class="number">9</span> &lt;&lt; <span class="number">4</span>) + <span class="number">14</span>] = n;</div><div class="line">        <span class="keyword">var</span> r, s, c, l, f, p = <span class="number">1732584193</span>, d = <span class="number">-271733879</span>, h = <span class="number">-1732584194</span>, m = <span class="number">271733878</span>;</div><div class="line">        <span class="keyword">for</span> (r = <span class="number">0</span>; r &lt; e.length; r += <span class="number">16</span>)</div><div class="line">            s = p,</div><div class="line">            c = d,</div><div class="line">            l = h,</div><div class="line">            f = m,</div><div class="line">            p = o(p, d, h, m, e[r], <span class="number">7</span>, <span class="number">-680876936</span>),</div><div class="line">            m = o(m, p, d, h, e[r + <span class="number">1</span>], <span class="number">12</span>, <span class="number">-389564586</span>),</div><div class="line">            h = o(h, m, p, d, e[r + <span class="number">2</span>], <span class="number">17</span>, <span class="number">606105819</span>),</div><div class="line">            d = o(d, h, m, p, e[r + <span class="number">3</span>], <span class="number">22</span>, <span class="number">-1044525330</span>),</div><div class="line">            p = o(p, d, h, m, e[r + <span class="number">4</span>], <span class="number">7</span>, <span class="number">-176418897</span>),</div><div class="line">            m = o(m, p, d, h, e[r + <span class="number">5</span>], <span class="number">12</span>, <span class="number">1200080426</span>),</div><div class="line">            h = o(h, m, p, d, e[r + <span class="number">6</span>], <span class="number">17</span>, <span class="number">-1473231341</span>),</div><div class="line">            d = o(d, h, m, p, e[r + <span class="number">7</span>], <span class="number">22</span>, <span class="number">-45705983</span>),</div><div class="line">            p = o(p, d, h, m, e[r + <span class="number">8</span>], <span class="number">7</span>, <span class="number">1770035416</span>),</div><div class="line">            m = o(m, p, d, h, e[r + <span class="number">9</span>], <span class="number">12</span>, <span class="number">-1958414417</span>),</div><div class="line">            h = o(h, m, p, d, e[r + <span class="number">10</span>], <span class="number">17</span>, <span class="number">-42063</span>),</div><div class="line">            d = o(d, h, m, p, e[r + <span class="number">11</span>], <span class="number">22</span>, <span class="number">-1990404162</span>),</div><div class="line">            p = o(p, d, h, m, e[r + <span class="number">12</span>], <span class="number">7</span>, <span class="number">1804603682</span>),</div><div class="line">            m = o(m, p, d, h, e[r + <span class="number">13</span>], <span class="number">12</span>, <span class="number">-40341101</span>),</div><div class="line">            h = o(h, m, p, d, e[r + <span class="number">14</span>], <span class="number">17</span>, <span class="number">-1502002290</span>),</div><div class="line">            d = o(d, h, m, p, e[r + <span class="number">15</span>], <span class="number">22</span>, <span class="number">1236535329</span>),</div><div class="line">            p = i(p, d, h, m, e[r + <span class="number">1</span>], <span class="number">5</span>, <span class="number">-165796510</span>),</div><div class="line">            m = i(m, p, d, h, e[r + <span class="number">6</span>], <span class="number">9</span>, <span class="number">-1069501632</span>),</div><div class="line">            h = i(h, m, p, d, e[r + <span class="number">11</span>], <span class="number">14</span>, <span class="number">643717713</span>),</div><div class="line">            d = i(d, h, m, p, e[r], <span class="number">20</span>, <span class="number">-373897302</span>),</div><div class="line">            p = i(p, d, h, m, e[r + <span class="number">5</span>], <span class="number">5</span>, <span class="number">-701558691</span>),</div><div class="line">            m = i(m, p, d, h, e[r + <span class="number">10</span>], <span class="number">9</span>, <span class="number">38016083</span>),</div><div class="line">            h = i(h, m, p, d, e[r + <span class="number">15</span>], <span class="number">14</span>, <span class="number">-660478335</span>),</div><div class="line">            d = i(d, h, m, p, e[r + <span class="number">4</span>], <span class="number">20</span>, <span class="number">-405537848</span>),</div><div class="line">            p = i(p, d, h, m, e[r + <span class="number">9</span>], <span class="number">5</span>, <span class="number">568446438</span>),</div><div class="line">            m = i(m, p, d, h, e[r + <span class="number">14</span>], <span class="number">9</span>, <span class="number">-1019803690</span>),</div><div class="line">            h = i(h, m, p, d, e[r + <span class="number">3</span>], <span class="number">14</span>, <span class="number">-187363961</span>),</div><div class="line">            d = i(d, h, m, p, e[r + <span class="number">8</span>], <span class="number">20</span>, <span class="number">1163531501</span>),</div><div class="line">            p = i(p, d, h, m, e[r + <span class="number">13</span>], <span class="number">5</span>, <span class="number">-1444681467</span>),</div><div class="line">            m = i(m, p, d, h, e[r + <span class="number">2</span>], <span class="number">9</span>, <span class="number">-51403784</span>),</div><div class="line">            h = i(h, m, p, d, e[r + <span class="number">7</span>], <span class="number">14</span>, <span class="number">1735328473</span>),</div><div class="line">            d = i(d, h, m, p, e[r + <span class="number">12</span>], <span class="number">20</span>, <span class="number">-1926607734</span>),</div><div class="line">            p = a(p, d, h, m, e[r + <span class="number">5</span>], <span class="number">4</span>, <span class="number">-378558</span>),</div><div class="line">            m = a(m, p, d, h, e[r + <span class="number">8</span>], <span class="number">11</span>, <span class="number">-2022574463</span>),</div><div class="line">            h = a(h, m, p, d, e[r + <span class="number">11</span>], <span class="number">16</span>, <span class="number">1839030562</span>),</div><div class="line">            d = a(d, h, m, p, e[r + <span class="number">14</span>], <span class="number">23</span>, <span class="number">-35309556</span>),</div><div class="line">            p = a(p, d, h, m, e[r + <span class="number">1</span>], <span class="number">4</span>, <span class="number">-1530992060</span>),</div><div class="line">            m = a(m, p, d, h, e[r + <span class="number">4</span>], <span class="number">11</span>, <span class="number">1272893353</span>),</div><div class="line">            h = a(h, m, p, d, e[r + <span class="number">7</span>], <span class="number">16</span>, <span class="number">-155497632</span>),</div><div class="line">            d = a(d, h, m, p, e[r + <span class="number">10</span>], <span class="number">23</span>, <span class="number">-1094730640</span>),</div><div class="line">            p = a(p, d, h, m, e[r + <span class="number">13</span>], <span class="number">4</span>, <span class="number">681279174</span>),</div><div class="line">            m = a(m, p, d, h, e[r], <span class="number">11</span>, <span class="number">-358537222</span>),</div><div class="line">            h = a(h, m, p, d, e[r + <span class="number">3</span>], <span class="number">16</span>, <span class="number">-722521979</span>),</div><div class="line">            d = a(d, h, m, p, e[r + <span class="number">6</span>], <span class="number">23</span>, <span class="number">76029189</span>),</div><div class="line">            p = a(p, d, h, m, e[r + <span class="number">9</span>], <span class="number">4</span>, <span class="number">-640364487</span>),</div><div class="line">            m = a(m, p, d, h, e[r + <span class="number">12</span>], <span class="number">11</span>, <span class="number">-421815835</span>),</div><div class="line">            h = a(h, m, p, d, e[r + <span class="number">15</span>], <span class="number">16</span>, <span class="number">530742520</span>),</div><div class="line">            d = a(d, h, m, p, e[r + <span class="number">2</span>], <span class="number">23</span>, <span class="number">-995338651</span>),</div><div class="line">            p = u(p, d, h, m, e[r], <span class="number">6</span>, <span class="number">-198630844</span>),</div><div class="line">            m = u(m, p, d, h, e[r + <span class="number">7</span>], <span class="number">10</span>, <span class="number">1126891415</span>),</div><div class="line">            h = u(h, m, p, d, e[r + <span class="number">14</span>], <span class="number">15</span>, <span class="number">-1416354905</span>),</div><div class="line">            d = u(d, h, m, p, e[r + <span class="number">5</span>], <span class="number">21</span>, <span class="number">-57434055</span>),</div><div class="line">            p = u(p, d, h, m, e[r + <span class="number">12</span>], <span class="number">6</span>, <span class="number">1700485571</span>),</div><div class="line">            m = u(m, p, d, h, e[r + <span class="number">3</span>], <span class="number">10</span>, <span class="number">-1894986606</span>),</div><div class="line">            h = u(h, m, p, d, e[r + <span class="number">10</span>], <span class="number">15</span>, <span class="number">-1051523</span>),</div><div class="line">            d = u(d, h, m, p, e[r + <span class="number">1</span>], <span class="number">21</span>, <span class="number">-2054922799</span>),</div><div class="line">            p = u(p, d, h, m, e[r + <span class="number">8</span>], <span class="number">6</span>, <span class="number">1873313359</span>),</div><div class="line">            m = u(m, p, d, h, e[r + <span class="number">15</span>], <span class="number">10</span>, <span class="number">-30611744</span>),</div><div class="line">            h = u(h, m, p, d, e[r + <span class="number">6</span>], <span class="number">15</span>, <span class="number">-1560198380</span>),</div><div class="line">            d = u(d, h, m, p, e[r + <span class="number">13</span>], <span class="number">21</span>, <span class="number">1309151649</span>),</div><div class="line">            p = u(p, d, h, m, e[r + <span class="number">4</span>], <span class="number">6</span>, <span class="number">-145523070</span>),</div><div class="line">            m = u(m, p, d, h, e[r + <span class="number">11</span>], <span class="number">10</span>, <span class="number">-1120210379</span>),</div><div class="line">            h = u(h, m, p, d, e[r + <span class="number">2</span>], <span class="number">15</span>, <span class="number">718787259</span>),</div><div class="line">            d = u(d, h, m, p, e[r + <span class="number">9</span>], <span class="number">21</span>, <span class="number">-343485551</span>),</div><div class="line">            p = t(p, s),</div><div class="line">            d = t(d, c),</div><div class="line">            h = t(h, l),</div><div class="line">            m = t(m, f);</div><div class="line">        <span class="keyword">return</span> [p, d, h, m]</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> t, n = <span class="string">""</span>;</div><div class="line">        <span class="keyword">for</span> (t = <span class="number">0</span>; t &lt; <span class="number">32</span> * e.length; t += <span class="number">8</span>)</div><div class="line">            n += <span class="built_in">String</span>.fromCharCode(e[t &gt;&gt; <span class="number">5</span>] &gt;&gt;&gt; t % <span class="number">32</span> &amp; <span class="number">255</span>);</div><div class="line">        <span class="keyword">return</span> n</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">l</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> t, n = [];</div><div class="line">        <span class="keyword">for</span> (n[(e.length &gt;&gt; <span class="number">2</span>) - <span class="number">1</span>] = <span class="keyword">void</span> <span class="number">0</span>,</div><div class="line">        t = <span class="number">0</span>; t &lt; n.length; t += <span class="number">1</span>)</div><div class="line">            n[t] = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (t = <span class="number">0</span>; t &lt; <span class="number">8</span> * e.length; t += <span class="number">8</span>)</div><div class="line">            n[t &gt;&gt; <span class="number">5</span>] |= (<span class="number">255</span> &amp; e.charCodeAt(t / <span class="number">8</span>)) &lt;&lt; t % <span class="number">32</span>;</div><div class="line">        <span class="keyword">return</span> n</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> c(s(l(e), <span class="number">8</span> * e.length))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">p</span>(<span class="params">e, t</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> n, r, o = l(e), i = [], a = [];</div><div class="line">        <span class="keyword">for</span> (i[<span class="number">15</span>] = a[<span class="number">15</span>] = <span class="keyword">void</span> <span class="number">0</span>,</div><div class="line">        o.length &gt; <span class="number">16</span> &amp;&amp; (o = s(o, <span class="number">8</span> * e.length)),</div><div class="line">        n = <span class="number">0</span>; <span class="number">16</span> &gt; n; n += <span class="number">1</span>)</div><div class="line">            i[n] = <span class="number">909522486</span> ^ o[n],</div><div class="line">            a[n] = <span class="number">1549556828</span> ^ o[n];</div><div class="line">        <span class="keyword">return</span> r = s(i.concat(l(t)), <span class="number">512</span> + <span class="number">8</span> * t.length),</div><div class="line">        c(s(a.concat(r), <span class="number">640</span>))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">d</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> t, n, r = <span class="string">"0123456789abcdef"</span>, o = <span class="string">""</span>;</div><div class="line">        <span class="keyword">for</span> (n = <span class="number">0</span>; n &lt; e.length; n += <span class="number">1</span>)</div><div class="line">            t = e.charCodeAt(n),</div><div class="line">            o += r.charAt(t &gt;&gt;&gt; <span class="number">4</span> &amp; <span class="number">15</span>) + r.charAt(<span class="number">15</span> &amp; t);</div><div class="line">        <span class="keyword">return</span> o</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">h</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="built_in">unescape</span>(<span class="built_in">encodeURIComponent</span>(e))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">m</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> f(h(e))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">g</span>(<span class="params">e</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> d(m(e))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">v</span>(<span class="params">e, t</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> p(h(e), h(t))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">y</span>(<span class="params">e, t</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> d(v(e, t))</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params">e, t, n</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> t ? n ? v(t, e) : y(t, e) : n ? m(e) : g(e)</div><div class="line">    &#125;</div><div class="line">    <span class="string">"function"</span> == <span class="keyword">typeof</span> define &amp;&amp; define.amd ? define(<span class="string">"static/js/lib/md5"</span>, [<span class="string">"require"</span>], <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> b</div><div class="line">    &#125;) : <span class="string">"object"</span> == <span class="keyword">typeof</span> <span class="built_in">module</span> &amp;&amp; <span class="built_in">module</span>.exports ? <span class="built_in">module</span>.exports = b : e.md5 = b</div><div class="line">&#125;(<span class="keyword">this</span>)</div></pre></td></tr></table></figure>
+<h2 id="五-最后"><a href="#五-最后" class="headerlink" title="五.最后"></a>五.最后</h2><blockquote>
+<p>我还发现了头条有个简约版，研究后发现这个简约版应该更好爬一些。</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20161226230850348?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<blockquote>
+<p>访问的格式是p+页码，直接读取每页里面的链接，就可以进行爬取了，就不再通过json串来获取文章地址，也不需要传什么限制参数，在本项目上稍加改动就可以了</p>
+</blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20161226230958084?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://img.blog.csdn.net/20161226231623684?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMjA5NTQ5NTk=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+<h2 id="六-JUST-DO-IT"><a href="#六-JUST-DO-IT" class="headerlink" title="六.JUST DO IT"></a>六.JUST DO IT</h2><blockquote>
+<p>。。。。。。。。。。。。。。。。。。。。。。</p>
+</blockquote>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2017-01-05T13:16:18.197Z" itemprop="dateUpdated">2017年1月5日 21:16</time>
+</span><br>
+
+
+        如要转载请注明出处：<a href="/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/" target="_blank" rel="external">http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/</a>
+    </div>
+    <footer>
+        <a href="http://z77z.oschina.io">
+            <img src="/img/avatar.jpg" alt="邹海清">
+            邹海清
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mybatis/">mybatis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&title=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&title=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/2017/01/02/js封装from表单数据为json串进行ajax提交/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">js封装from表单数据为json串进行ajax提交</h4>
+      </a>
+    </div>
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2016/12/28/hello-world/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Hello World</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+<div class="comments" id="comments">
+    <div class="ds-thread" data-thread-key="java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取" data-title="java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取" data-url="http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/"></div>
+</div>
+<script>
+lazyScripts.push('//cdn.bootcss.com/marked/0.3.6/marked.min.js');
+
+var duoshuoQuery = {short_name:'z77z', theme: 'none'};
+lazyScripts.push('/js/embed.min.js?v=1.4.3');
+
+
+</script>
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        我只要一角钱~ ~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <ul class="reward-items">
+        
+        <li>
+            <img src="/img/wechat.png" title="微信打赏二维码" alt="微信打赏二维码">
+            <p>微信</p>
+        </li>
+        
+
+        
+        <li>
+            <img src="/img/alipay.jpg" title="支付宝打赏二维码" alt="支付宝打赏二维码">
+            <p>支付宝</p>
+        </li>
+        
+    </ul>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            <span>博客内容遵循 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">知识共享 署名 - 非商业性 - 相同方式共享 4.0协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p>
+            <span>Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://git.oschina.net/z77z" target="_blank">邹海清</a></span>
+            <span>z77z的小码窝 &copy; 2016 - 2017</span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&title=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&pic=http://z77z.oschina.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&title=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取》 — z77z的小码窝&url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/&via=http://z77z.oschina.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://z77z.oschina.io/2016/12/29/java-spring-mybatis整合实现爬虫之《今日头条》搞笑动态图片爬取/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD70lEQVR42u3aS3YiQQwEQO5/6ZkDGHCmJGwvolc83FR1RS9kfR6P+Pr39vp656tfvVrz1TezJ/z6JMcXDhw4cOBYH/X9ZslfZ6zJlT9Psi8OHDhw4LjieBVx8nvef/8+iCaHbEPs8Plx4MCBA8evcrSBLVl/FvLz9XHgwIEDx1/j2BT78sCZlBc/8o8CDhw4cOA44shLb8k3bQkv2WtWTPxgrRQHDhw4cMynBR55S+lvfv7IfAcOHDhw4CinwvKA1CZd7Z3tYMTswoEDBw4ce47N0ECbyM2CelJknL2Ml0+IAwcOHDiOOGajA/mD5hnTrJyX3/8NEw4cOHDgWHBsRhbasLcZekiw2kGHJzviwIEDB441R1t0a5eelRSvol4+qIEDBw4cOK44Zu3/9s52l+TAeckyf5E4cODAgeOWYz+gkK+5aVnlKC0NDhw4cOC44shLfm0il4fAtvnUBv6EFQcOHDhw7Dk2YwFtgJwlbFepY46LAwcOHDg2HG3xbhZor1pT+8GLb9bEgQMHDhxrjiS9aZO3NmxvAmqSFuafceDAgQPHnqMNjbfFvlv6tshYZKI4cODAgWMyh/BoDzm7v023Zq8wSeEKGhw4cODAEe+YF+naUuCw67UeYqiDaPJWceDAgQPHmqYNgXmx7yytiltWB2kbDhw4cOAo12/HDpI73+O2nbH8CWdtp5cDczhw4MCBozxLvsFs41krKB+PyF9AURPFgQMHDhxH7aWrZC//ZlYizFPE+uw4cODAgWPNMQtg+dJ5Oteuma/WjjvgwIEDB44NRz5w0KZz7cPtU8rNPxBPioM4cODAgWPE0YbJtgCXB9Q2DWvbWslvceDAgQPHnmMWojZtqnaorh28y5/5yW9x4MCBA8cRx2wU4F98tYW8WSurLTh+UxzEgQMHDhwjjk3CloS6vNiXjzXkITYP+Thw4MCB44ojCbGzkbX8YLOGU5vs4cCBAweO3+KYjbjNBhrysmNbTJyFYRw4cODAseeYlc/ycDsbvMtjXwta34kDBw4cOEqOJDVKhhv2KV/b6LptVj3yTBEHDhw4cAQceSOqHZvbHPUnUXDgwIEDxxVHu0He1CkKcKM21bDYl9yJAwcOHDgWd96OL+RtqrxEmLepZqBRRosDBw4cOOYr1EXA5K+blO+qZTXbCwcOHDhwzPZKgmseqPKA3SZps8JlHWhx4MCBA8cRRx4UZ2nYY3Rthi2GxUccOHDgwPHjHHlwvSoa7suIRVkQBw4cOHD8OEe+Tfu5bSa1lNHpcODAgQPHEce+sdR+/4nd2+C6ajvhwIEDB471QEN+7PxIm5JfEpI/UmrEgQMHDhzP9/0PuGg0NmeqIJkAAAAASUVORK5CYII=" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+
+lazyScripts.push('//s95.cnzz.com/z_stat.php?id=1261081671&web_id=1261081671')
+
+</script>
+
+<script src="/js/main.min.js?v=1.4.3"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="/js/search.min.js?v=1.4.3" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>
